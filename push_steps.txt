@@ -1,0 +1,12 @@
+For cloning a repo
+git clone repo_url
+
+Commands to add and push changes
+git add . 		-> Add all new files
+git add -u 		-> Updates tracking for files that changed names or were deleted
+git add - A	-> does both the previous - USE THIS
+git commit -m "message"	-> commit the local repo with a useful message
+git push		-> push changes to Github
+
+For pulling the repo for updates from Github
+git pull origin master

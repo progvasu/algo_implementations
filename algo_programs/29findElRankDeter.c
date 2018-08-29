@@ -39,39 +39,57 @@ int findEle(int *, int, int, int);
 int findGoodPivot(int *a, int min, int max)	{
 	int i, j, temp;
 
-	// sorting in groups of 5
-	for (i = min; i < max ; i += 5)	{
-		sort(a, i, i + 4);
+	// base case - if the number of elements are less than 5
+	if (max - min + 1 <= 5)	{
+		// just sort the numbers and return the mid element
+		sort(a, min, max);
+		
+		// testing
+		//printf("Middle element = %d\n", a[min + (max - min) / 2]);
+		
+		// return the middle element
+		return a[min + (max - min) / 2];
 	}
 
-	// for base case
-	if (max - min + 1 == 5)
-		return a[min + 2];
-	
+	// sorting in groups of 5
+	for (i = min ; i + 4 <= max ; i = i + 5)	{
+		sort(a, i, i + 4);
+	}
+	// sorting remaining element group (< 5) if any
+	if (i < max)
+		sort(a, i, max);
+
 	// testing - print out the array
-	// for (i = min ; i <=max ; i++)
+	//for (i = min ; i <= max ; i++)
 	//	printf("%d  ", a[i]);
-	// printf("\n");
-	// return 0;
+	//	printf("\n");
+	 	//return 0;
 
 	// moving medians to the front of the array
-	for (i = min, j = min + 2 ; i <= max && j <= max; i++, j += 5)	{
+	for (i = min, j = min + 2 ; j <= max; i++, j += 5)	{
 		// swap a[i] with a[j]
 		temp = a[i];
 		a[i] = a[j];
 		a[j] = temp;
 	}
+	
+	// testing - print out the array
+	//for (i = min ; i <= max ; i++)
+	//	printf("%d  ", a[i]);
+	//	printf("\n");
+	// 	return 0;
 
-	return findEle(a, min, min + 4, 3);
+	return findEle(a, min, min + i - 1, (i - 1)/2);
 }
 
 int findEle(int *arr, int i, int j, int rank)	{
 	int pivot_pos;
 
+	// finding good pivot position
 	pivot_pos = findGoodPivot(arr, i, j);
 	
 	// testing
-	// return 0; 
+	//return 0; 
 
 	// swapping with the first element
 	int temp = arr[pivot_pos];
@@ -83,7 +101,7 @@ int findEle(int *arr, int i, int j, int rank)	{
 	k = partition(arr, i, j);
 
 	if (rank == (j - k + 1))
-		return arr[k];
+		return k;
 	else if (rank < (j - k + 1))
 		findEle(arr, k + 1, j, rank);
 	else
@@ -91,18 +109,16 @@ int findEle(int *arr, int i, int j, int rank)	{
 }
 
 int main()	{
-
-		// assuming input array is multiple of 5
-	int a[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24};
-	int b[] = {18, 7, 12, 22, 11, 6, 0, 9, 1, 19, 20, 4, 21, 8, 23, 13, 3, 15, 14, 2, 17, 24, 5, 10, 16};
-	int a_len = 25, b_len = 25, ele, rank;
+	int a[] = {0, 1, 2, 3, 4, 5, 6, 7};
+	int b[] = {4, 3, 5, 0, 2, 1, 7, 6};
+	int a_len = 8, b_len = 8, pos, rank;
 
 	printf("Enter the rank of the element: ");
 	scanf("%d", &rank);
 
-	ele = findEle(b, 0, b_len - 1, rank);
+	pos = findEle(b, 0, b_len - 1, rank);
 
-	printf("Our Answer = %d\n", ele);
+	printf("Our Answer = %d\n", b[pos]);
 	printf("Correct Answer = %d\n", a_len - rank);
 	
 	return 0;

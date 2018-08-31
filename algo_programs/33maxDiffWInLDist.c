@@ -55,9 +55,8 @@ int main()	{
 
 		// smartly picking next minimum value of i
 		// -1 because j will be incremented in the next iteration
-		t = 0;
 		// if queue has a smaller element than the current i
-		
+		t = 0;
 
 		while (j - i - 1 > l)
 			i = queue[t++];

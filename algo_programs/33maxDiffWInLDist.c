@@ -19,6 +19,9 @@ int main()	{
 		printf("%d  ", a[i]);
 	printf("\n");
 
+	// testing
+	// a[0] = 68, a[1] = 82, a[2] = 25, a[3] = 7, a[4] = 61, a[5] = 49, a[6] = 45;
+
 	printf("Enter the value of 'l' within [1, %d]: ", n - 1);
 	scanf("%d", &l);
 
@@ -37,15 +40,15 @@ int main()	{
 	max = 0;
 
 	// need a DS - somewhat like a queue
-	int queue[n], t = 0, h = 0, test_iter = 0, temp;
-	queue[h] = 0;
+	int queue[n], t = 0, h = -1, test_iter = 0, temp;
+	//queue[h] = 0;
 	i = 0;
 
 	for (j = 1 ; j < n ; j++)	{
 		if (a[j] - a[i] > max)
 			max = a[j] - a[i];
 
-		while (h >= 0 && a[queue[h]] > a[j]) 
+		while (h >= t && a[queue[h]] > a[j]) 
 			h--;
 
 		queue[++h] = j;
@@ -53,12 +56,13 @@ int main()	{
 		// testing
 		temp = i;
 
+		if (t <= h && a[i] > a[queue[t]])
+			i = queue[t++];
 		// smartly picking next minimum value of i
 		// -1 because j will be incremented in the next iteration
 		// if queue has a smaller element than the current i
-		t = 0;
 
-		while (j - i - 1 > l)
+		if (j - i >= l)
 			i = queue[t++];
 
 		// testing - print program status 

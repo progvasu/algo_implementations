@@ -68,7 +68,7 @@ int main()	{
 
 	// brute force result
 	printf("\nMax Area = %d  Left = %d  Right = %d \n", max_area, left, right);
-	
+
 	// using optimized algorithm
 	int l_min[n], r_min[n], top_index;
 	struct node *head = NULL;
@@ -88,7 +88,7 @@ int main()	{
 
 	// will have the last element definitely in the stack
 	while (peek(head) != -1)	{
-		r_min[pop(&head)] = n - 1; // for ease in calculating max are of hist
+		r_min[pop(&head)] = n; // for ease in calculating max are of hist
 	}
 
 	head = NULL;
@@ -107,24 +107,24 @@ int main()	{
 
 	// will have the last element definitely in the stack
 	while (peek(head) != -1)	{
-		l_min[pop(&head)] = 0; // for ease of calculating area of the hist
+		l_min[pop(&head)] = -1; // for ease of calculating area of the hist
 	}
 
 	// testing - l_min and r_min works correctly
-	//for (i = 0 ; i < n ; i ++)
-	//	printf("%3d", r_min[i]);
-	//printf("  RMIN\n");
+	for (i = 0 ; i < n ; i ++)
+		printf("%3d", r_min[i]);
+	printf("  RMIN\n");
 
-	//for (i = 0 ; i < n ; i ++)
-	//	printf("%3d", l_min[i]);
-	//printf("  LMIN\n");
+	for (i = 0 ; i < n ; i ++)
+		printf("%3d", l_min[i]);
+	printf("  LMIN\n");
 
 	// optimized algorithm
 	max_area = -1;
 	for (i = 0 ; i < n ; i++)	{
 		if (a[i] * (r_min[i] - l_min[i]) > max_area)	{
-			max_area = a[i] * (r_min[i] - l_min[i] - 1);
-			left = l_min[i] - 1;
+			max_area = a[i] * (r_min[i] - l_min[i]);
+			left = l_min[i] + 1;
 			right = r_min[i] - 1;
 		}
 	}

@@ -43,10 +43,10 @@ int findGoodPivot(int *a, int min, int max)	{
 	if (max - min + 1 <= 5)	{
 		// just sort the numbers and return the mid element
 		sort(a, min, max);
-		
+
 		// testing
 		//printf("Middle element = %d\n", a[min + (max - min) / 2]);
-		
+
 		// return the middle element
 		return a[min + (max - min) / 2];
 	}
@@ -72,14 +72,14 @@ int findGoodPivot(int *a, int min, int max)	{
 		a[i] = a[j];
 		a[j] = temp;
 	}
-	
+
 	// testing - print out the array
 	//for (i = min ; i <= max ; i++)
 	//	printf("%d  ", a[i]);
 	//	printf("\n");
 	// 	return 0;
 
-	return findEle(a, min, min + i - 1, (i - 1)/2);
+	return findEle(a, min, min + i - 1, (i - 1)/2); // check this
 }
 
 int findEle(int *arr, int i, int j, int rank)	{
@@ -87,9 +87,9 @@ int findEle(int *arr, int i, int j, int rank)	{
 
 	// finding good pivot position
 	pivot_pos = findGoodPivot(arr, i, j);
-	
+
 	// testing
-	//return 0; 
+	//return 0;
 
 	// swapping with the first element
 	int temp = arr[pivot_pos];
@@ -120,6 +120,6 @@ int main()	{
 
 	printf("Our Answer = %d\n", b[pos]);
 	printf("Correct Answer = %d\n", a_len - rank);
-	
+
 	return 0;
 }

@@ -111,19 +111,19 @@ int main()	{
 	}
 
 	// testing - l_min and r_min works correctly
-	for (i = 0 ; i < n ; i ++)
-		printf("%3d", r_min[i]);
-	printf("  RMIN\n");
+	//for (i = 0 ; i < n ; i ++)
+	//	printf("%3d", r_min[i]);
+	//printf("  RMIN\n");
 
-	for (i = 0 ; i < n ; i ++)
-		printf("%3d", l_min[i]);
-	printf("  LMIN\n");
+	//for (i = 0 ; i < n ; i ++)
+	//	printf("%3d", l_min[i]);
+	//printf("  LMIN\n");
 
 	// optimized algorithm
 	max_area = -1;
 	for (i = 0 ; i < n ; i++)	{
-		if (a[i] * (r_min[i] - l_min[i]) > max_area)	{
-			max_area = a[i] * (r_min[i] - l_min[i]);
+		if (a[i] * (r_min[i] - l_min[i] - 2) > max_area)	{
+			max_area = a[i] * (r_min[i] - l_min[i] - 2);
 			left = l_min[i] + 1;
 			right = r_min[i] - 1;
 		}

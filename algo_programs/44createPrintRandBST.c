@@ -43,6 +43,73 @@ void insertBST(struct node **root, int key)	{
 		parent->rc = temp;
 }
 
+#define MAX(X, Y) ((X > Y ? X : Y))
+
+int power(int x, int n)	{
+	if (n == 0)
+		return 1;
+	if (n % 2 == 0)
+		return power(x * x, n / 2);
+	else
+		return x * power(x * x, n / 2);
+}
+
+void fillLevel(struct node *root, int *levelOrder, int pos, int max_pos)	{
+	// filling value at position 'pos' in levelOrder
+	if (root == NULL)	{
+		if (pos <= max_pos)	{
+			levelOrder[pos] = -1;
+			fillLevel(NULL, levelOrder, pos*2 + 1, max_pos);
+			fillLevel(NULL, levelOrder, pos*2 + 2, max_pos);
+		}
+		else
+			return;
+	}
+	else	{
+	levelOrder[pos] = root->key;
+	fillLevel(root->lc, levelOrder, pos*2 + 1, max_pos);
+	fillLevel(root->rc, levelOrder, pos*2 + 2, max_pos);
+	}
+}
+
+int findHeight(struct node *root)	{
+	if (root == NULL)	return -1;
+	int left = findHeight(root->lc), right = findHeight(root->rc);
+	return (1 + MAX(left, right));
+}
+
+void treePrint(struct node *root)	{
+	// find level order traversal
+	int height = findHeight(root);
+	int no_nodes = power(2, height + 1) - 1;
+	int levelOrder[no_nodes];
+	printf("%d\n", no_nodes);
+	fillLevel(root, levelOrder, 0, no_nodes - 1);
+	
+	// print in grid form
+	// printing in reverse order
+	int mid = 2;
+	int step = 2;
+	int atHeight = height;
+	int atNode = no_nodes - 1;
+	int nodes_h;
+	int i;
+	while (atHeight >= 0)	{
+		nodes_h = power(2, atHeight);
+		// print strating space
+		printf("%*s", (mid/2)*step, " ");
+		for (i = 0 ; i < nodes_h ; i++)	{
+			if (levelOrder[i]!=-1)
+			printf("%*d", mid*step, levelOrder[i]);
+			else
+			printf("%*s", mid*step, "_");
+		}
+		printf("\n");
+		mid *= 2;
+		atHeight--;
+	}
+}
+
 void testPrint(struct node *root)	{
 	if (root == NULL)	return;
 	printf("%6dr", root->key);
@@ -56,7 +123,7 @@ void testPrint(struct node *root)	{
 }
 
 int main()	{
-	srand(time(0));
+	srand(0);
 
 	struct node *root = NULL;
 
@@ -81,7 +148,10 @@ int main()	{
 	}
 
 	// test print
-	testPrint(root);
+	//testPrint(root);
+
+	// print tree form
+	treePrint(root);
 
 	return 0;
 }

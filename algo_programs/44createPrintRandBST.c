@@ -79,34 +79,75 @@ int findHeight(struct node *root)	{
 }
 
 void treePrint(struct node *root)	{
-	// find level order traversal
 	int height = findHeight(root);
+	if (height > 5)	{
+		printf("Tree size to big to fit on screen\n");
+		return;
+	}
+
 	int no_nodes = power(2, height + 1) - 1;
+
+	// find level order traversal
 	int levelOrder[no_nodes];
-	printf("%d\n", no_nodes);
 	fillLevel(root, levelOrder, 0, no_nodes - 1);
 	
 	// print in grid form
 	// printing in reverse order
-	int mid = 2;
-	int step = 2;
-	int atHeight = height;
-	int atNode = no_nodes - 1;
-	int nodes_h;
-	int i;
-	while (atHeight >= 0)	{
-		nodes_h = power(2, atHeight);
-		// print strating space
-		printf("%*s", (mid/2)*step, " ");
-		for (i = 0 ; i < nodes_h ; i++)	{
-			if (levelOrder[i]!=-1)
-			printf("%*d", mid*step, levelOrder[i]);
-			else
-			printf("%*s", mid*step, "_");
+	//int mid = 4, ch = 0, n_ch, cn = no_nodes - 1, i;
+	//while (ch <= height)	{
+	//	// number of nodes at current height
+	//	n_ch = power(2, height - ch);
+	//	// printing starting space
+	//	printf("%*s", mid/2, "");
+	//	// printing nodes
+	//	for (i = 0 ; i < n_ch ; i++)	{
+	//		if (levelOrder[cn] != -1)	{
+	//			if (i == 0) // for first element
+	//				printf("%d", levelOrder[cn--]);
+	//			else
+	//				printf("%*d", mid, levelOrder[cn--]);
+	//		}
+	//		else	{
+	//			cn--;
+	//			if (i == 0)
+	//				printf("%s", "-");
+	//			else
+	//				printf("%*s", mid, "-");
+	//		}
+	//	}
+	//	printf("\n");
+	//	mid *= 2;
+	//	ch += 1;
+	//}
+
+	int mid, cn, n_ch, ch, i;
+	// printing from root to leaf
+	mid = 4 * power(2, height);
+	cn = 0;
+	n_ch = 1;
+	ch = height;
+	while (ch >= 0)	{
+		// printing starting space
+		printf("%*s", mid/2, "");
+		for (i = 0 ; i < n_ch ; i++)	{
+			if (levelOrder[cn] != -1)	{
+				if (i == 0) // for first node at this height
+					printf("%d", levelOrder[cn++]);
+				else
+					printf("%*d", mid, levelOrder[cn++]);
+			}
+			else	{
+				cn++;
+				if (i == 0)
+					printf("%s", "-");
+				else
+					printf("%*s", mid, "-");
+			}
 		}
 		printf("\n");
-		mid *= 2;
-		atHeight--;
+		mid /= 2;
+		n_ch *= 2;
+		ch--;
 	}
 }
 
@@ -123,7 +164,8 @@ void testPrint(struct node *root)	{
 }
 
 int main()	{
-	srand(0);
+	srand(time(0));
+	// set to 5 for height 3
 
 	struct node *root = NULL;
 

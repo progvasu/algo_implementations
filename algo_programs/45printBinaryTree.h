@@ -1,4 +1,4 @@
-// print a BST
+// print a Binary Tree
 
 #define MAX(X, Y) ((X > Y ? X : Y))
 
@@ -37,10 +37,14 @@ int findHeight(struct node *root)	{
 	return (1 + MAX(left, right));
 }
 
-void treePrint(struct node *root)	{
+void printBinaryTree(struct node *root)	{
 	int height = findHeight(root);
 	if (height > 5)	{
 		printf("Tree size to big to fit on screen\n");
+		return;
+	}
+	else if (height == -1)	{
+		printf("Tree Empty\n");
 		return;
 	}
 

@@ -51,35 +51,73 @@ void insertBST(struct node **root, int key)	{
 	}
 }
 
-void deleteBST(struct node **node, int key)	{
-	// find the key in the tree
-	while ((*node)->key != key)	{
-		if (key < (*node)->key)
-			node = &(*node)->lc;
-		else
-			node = &(*node)->rc;
+// function declarations for deletion
+void deleteBST(struct node **, int key);
+void deleteNode(struct node **, struct node *);
+void transplant(struct node **, struct node *, struct node *);
 
-		if ((*node) == NULL)	{
+// this delete procedure replaces the entire node and not just the values
+void deleteBST(struct node **root, int key)	{
+	struct node *node = (*root);
+	// find the key in the tree
+	while ((node)->key != key)	{
+		if (key < (node)->key)
+			node = (node)->lc;
+		else
+			node = (node)->rc;
+
+		if ((node) == NULL)	{
 			printf("NODE NOT FOUND!\n");
 			return;
 		}
 	}
 
-	struct node *temp = (*node);
-	// if no children
-	if ((*node)->lc == NULL || (*node)->rc == NULL)	{
-		if ((*node)->lc == NULL)	{
-			if ((*node)->key < (*node)->pr:)
-		}
-			
-	}
+	struct node *temp = node;
+	deleteNode(root, node);
 	free(temp);
 }
 
-#include "45printBST.h" 
+void deleteNode(struct node **root, struct node *node)	{
+	if (node->lc == NULL)
+		transplant(root, node, node->rc);
+	else if (node->rc == NULL)
+		transplant(root, node, node->lc);
+	else	{
+		// find inorder successor
+		struct node *suc = node->rc;
+		while (suc->lc != NULL)	{
+			suc = suc->lc;
+		}
+		if (suc->pr != node)	{
+			transplant(root, suc, suc->rc);
+			// because there is no left child
+			suc->rc = node->rc;
+			suc->rc->pr = suc;
+		}
+		transplant(root, node, suc);
+		suc->lc = node->lc;
+		suc->lc->pr = suc;
+	}
+}
+
+// this procedure replaces node1 with node2 - just the parents
+void transplant(struct node **root, struct node *node1, struct node *node2)	{
+	if (node1->pr == NULL)
+		(*root) = node2;
+	else if (node1 == node1->pr->lc)
+		node1->pr->lc = node2;
+	else
+		node1->pr->rc = node2;
+	
+	if (node2 != NULL)
+		node2->pr = node1->pr;
+}
+
+#include "45printBinaryTree.h" 
 
 int main()	{
 	srand(time(0));
+	
 	int n = 15;
 	int a[n], i, temp, rand_index;
 	
@@ -101,14 +139,24 @@ int main()	{
 		insertBST(&root, a[i]);
 
 	// print BST
-	treePrint(root);
+	printBinaryTree(root);
 	
 	// delete node
 	int del_node;
-	printf("ENTRE: ");
-	scanf("%d", &del_node);
-	deleteBST(&root, del_node);
-	treePrint(root);
+
+	while (1)	{
+		printf("Enter number to be deleted (-1 to exit): ");
+		scanf("%d", &del_node);
+		if (del_node == -1)
+			break;
+		
+		deleteBST(&root, del_node);
+
+		if (root == NULL)
+			break;
+
+		printBinaryTree(root);
+	}
 
 	return 0;
 }

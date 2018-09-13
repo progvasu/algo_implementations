@@ -1,4 +1,4 @@
-// insert a node into the AVL tree
+// delete a node from the AVL tree
 
 #include<stdio.h>
 #include<stdlib.h>
@@ -13,6 +13,8 @@ struct node	{
 };
 
 #include "45printBinaryTree.h"
+
+// ***** INSERTING INTO AVL ***** //
 
 // function decalarations for AVL insert
 void insertAVL(struct node **, int);
@@ -112,7 +114,8 @@ void fixAVL(struct node **root, struct node *z)	{
 					rightRotate(root, x, z);
 				}
 			}
-
+			
+			// only one interation is required to fix the tree
 			return;
 		}
 	}
@@ -191,23 +194,157 @@ int setHeight(struct node *node)	{
 	}
 }
 
+// ***** DELETING A NODE ***** //
+
+// function declaration for deleting a node from AVL
+void deleteAVL(struct node **, int);
+void deleteNode(struct node **, struct node *);
+void transplant(struct node **, struct node *, struct node *);
+// leftRotate and rightRotate defined above
+void fixDelAVL(struct node **, struct node *);
+
+// this delete procedure replaces the entire node and not just the values
+void deleteAVL(struct node **root, int key)	{
+	struct node *node = (*root);
+	// find the key in the tree
+	while ((node)->key != key)	{
+		if (key < (node)->key)
+			node = (node)->lc;
+		else
+			node = (node)->rc;
+
+		if ((node) == NULL)	{
+			printf("NODE NOT FOUND!\n");
+			return;
+		}
+	}
+
+	struct node *temp = node;
+	deleteNode(root, node);
+	free(temp);
+}
+
+// this procedure deletes the node from the tree
+void deleteNode(struct node **root, struct node *node)	{
+	if (node->lc == NULL)	{
+		transplant(root, node, node->rc);
+	}
+	else if (node->rc == NULL)
+		transplant(root, node, node->lc);
+	else	{
+		// find inorder successor
+		struct node *suc = node->rc;
+		while (suc->lc != NULL)	{
+			suc = suc->lc;
+		}
+		if (suc->pr != node)	{
+			transplant(root, suc, suc->rc);
+			// because there is no left child
+			suc->rc = node->rc;
+			suc->rc->pr = suc;
+		}
+		transplant(root, node, suc);
+		suc->lc = node->lc;
+		suc->lc->pr = suc;
+	}
+}
+
+// this procedure replaces node1 with node2 - just the parents
+// and fixing the heights also
+void transplant(struct node **root, struct node *node1, struct node *node2)	{
+	if (node1->pr == NULL)
+		(*root) = node2;
+	else if (node1 == node1->pr->lc)
+		node1->pr->lc = node2;
+	else
+		node1->pr->rc = node2;
+	
+	if (node2 != NULL)
+		node2->pr = node1->pr;
+}
+
+void fixDelAVL(struct node **root, struct node *z)	{
+	int res;
+
+	struct node *x, *y;
+	// since z is the new node inserted
+	y = z;
+	z = z->pr;
+	x = NULL;
+
+	// fix heights till root and find violation of AVL if any
+	while (z != NULL)	{
+		res = setHeight(z);
+		if (res == 0)
+			return;
+		else if (res == -1)	{
+			x = y;
+			y = z;
+			z = z->pr;
+		}
+		else	{
+			// find if zig zig or zig zag
+			// zig zig
+			// dont have to check for if x is null since we will never enter this loop
+			// fixing height of z
+			z->height -= 2;
+			if (x->key < y->key && y->key < z->key)
+				rightRotate(root, y, z);
+			else if (x->key >= y->key && y->key >= z->key)
+				leftRotate(root, z, y);
+			else	{
+				// fixing height of x and y
+				x->height += 1;
+				y->height -= 1;
+				if (x->key < y->key)	{
+					rightRotate(root, x, y);
+					// it is implied that y->key > z->key otherwise we get above cases
+					leftRotate(root, z, x);
+				}
+				else	{
+					// x->key > y->key
+					leftRotate(root, y, x);
+					// implied that y->key <- z->key
+					rightRotate(root, x, z);
+				}
+			}
+			
+			// only one interation is required to fix the tree
+			return;
+		}
+	}
+}
+
 int main()	{
 	srand(time(0));
 	
-	int key;
+	int n = 20;
+	int a[n], i, temp, rand_index;
 	struct node *root = NULL;
-	
-	while(1)	{
-		printf("Enter the node to be inserted (-1 to exit): ");
-		scanf("%d", &key);
 
-		if (key == -1)
-			break;
-
-		insertAVL(&root, key);
-
-		printBinaryTree(root);
+	// create an index array of n elements
+	for (i = 0 ; i < n ; i ++)
+		a[i] = i;
+	// permute it
+	for (i = 0 ; i < n ; i++)	{
+		rand_index = rand() % n;
+		temp = a[rand_index];
+		a[rand_index] = a[i];
+		a[i] = temp;
 	}
+	// insert into AVL tree
+	for (i = 0 ; i < n ; i++)
+		insertAVL(&root, a[i]);
+
+	printBinaryTree(root);
+	
+	int del_node;
+	printf("Enter the node to be deleted: ");
+	scanf("%d", &del_node);
+	
+	deleteAVL(&root, del_node);
+
+	printBinaryTree(root);
 
 	return 0;
 }

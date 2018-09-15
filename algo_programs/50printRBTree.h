@@ -1,4 +1,10 @@
-// print a Binary Tree (key, lc, rc)
+// print a RB Tree with color (key, col, lc, rc)
+
+// function declarations
+int power(int, int);
+void fillLevel(struct node *, int *, char *, int, int);
+int findHeight(struct node *);
+void printRBTree(struct node *);
 
 // max function macro
 #define MAX(X, Y) ((X > Y ? X : Y))
@@ -15,15 +21,16 @@ int power(int x, int n)	{
 		return x * power(x * x, n / 2);
 }
 
-// calculate the level order traversal of tree
-void fillLevel(struct node *root, int *levelOrder, int pos, int max_pos)	{
+// calculate the level order traversal of tree with colors
+void fillLevel(struct node *root, int *levelOrder, char *colorOrder, int pos, int max_pos)	{
 	// subtree doesn't exist - fill values for all sub levels as -1
 	if (root == NULL)	{
 		if (pos <= max_pos)	{
 			levelOrder[pos] = -1;
+			colorOrder[pos] = 'N';
 			// fill values for both sub children
-			fillLevel(NULL, levelOrder, pos*2 + 1, max_pos);
-			fillLevel(NULL, levelOrder, pos*2 + 2, max_pos);
+			fillLevel(NULL, levelOrder, colorOrder, pos*2 + 1, max_pos);
+			fillLevel(NULL, levelOrder, colorOrder, pos*2 + 2, max_pos);
 		}
 		else
 			// reached the end node of the tree
@@ -33,9 +40,10 @@ void fillLevel(struct node *root, int *levelOrder, int pos, int max_pos)	{
 	else	{
 		// filling in the level of root node
 		levelOrder[pos] = root->key;
+		colorOrder[pos] = root->color;
 		// fill in the level of children
-		fillLevel(root->lc, levelOrder, pos*2 + 1, max_pos);
-		fillLevel(root->rc, levelOrder, pos*2 + 2, max_pos);
+		fillLevel(root->lc, levelOrder, colorOrder, pos*2 + 1, max_pos);
+		fillLevel(root->rc, levelOrder, colorOrder, pos*2 + 2, max_pos);
 	}
 }
 
@@ -47,7 +55,7 @@ int findHeight(struct node *root)	{
 }
 
 // main function for printing the tree
-void printBinaryTree(struct node *root)	{
+void printRBTree(struct node *root)	{
 	// calculate height of the tree
 	int height = findHeight(root);
 
@@ -67,36 +75,9 @@ void printBinaryTree(struct node *root)	{
 
 	// find level order traversal
 	int levelOrder[no_nodes];
-	fillLevel(root, levelOrder, 0, no_nodes - 1);
+	char colorOrder[no_nodes];
+	fillLevel(root, levelOrder, colorOrder, 0, no_nodes - 1);
 	
-	// printing in reverse order from leaves to root
-	//int mid = 4, ch = 0, n_ch, cn = no_nodes - 1, i;
-	//while (ch <= height)	{
-	//	// number of nodes at current height
-	//	n_ch = power(2, height - ch);
-	//	// printing starting space
-	//	printf("%*s", mid/2, "");
-	//	// printing nodes
-	//	for (i = 0 ; i < n_ch ; i++)	{
-	//		if (levelOrder[cn] != -1)	{
-	//			if (i == 0) // for first element
-	//				printf("%d", levelOrder[cn--]);
-	//			else
-	//				printf("%*d", mid, levelOrder[cn--]);
-	//		}
-	//		else	{
-	//			cn--;
-	//			if (i == 0)
-	//				printf("%s", "-");
-	//			else
-	//				printf("%*s", mid, "-");
-	//		}
-	//	}
-	//	printf("\n");
-	//	mid *= 2;
-	//	ch += 1;
-	//}
-
 	// printing from root to leaf
 
 	// mid - spacing between nodes for the current height
@@ -118,8 +99,14 @@ void printBinaryTree(struct node *root)	{
 	// current height = height of root = max height
 	ch = height;
 	
+	// storing old value of cn
+	int temp;
+
 	// while at and above leaf level
 	while (ch >= 0)	{
+
+		// storing old value of cn
+		temp = cn;
 
 		// printing all nodes at current level
 		for (i = 0 ; i < n_ch ; i++)	{
@@ -131,6 +118,34 @@ void printBinaryTree(struct node *root)	{
 				else
 					// for all the remaining nodes
 					printf("%*d", mid, levelOrder[cn++]);
+			}
+			// if node is null - print blank
+			else	{
+				cn++;
+				if (i == 0)
+					// for first node at this height
+					printf("%*s", mid/2, "-");
+				else
+					// for rest of the nodes
+					printf("%*s", mid, "-");
+			}
+		}
+
+		// restoring value of cn
+		cn = temp;
+
+		// printing colors of nodes at current height
+		// moving down one level
+		printf("\n");
+		for (i = 0 ; i < n_ch ; i++)	{
+			// if node is not null
+			if (colorOrder[cn] != 'N')	{
+				if (i == 0) 
+					// for first color node at this height
+					printf("%*c", mid/2, colorOrder[cn++]);
+				else
+					// for all the remaining nodes
+					printf("%*c", mid, colorOrder[cn++]);
 			}
 			// if node is null - print blank
 			else	{

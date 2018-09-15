@@ -116,7 +116,7 @@ void transplant(struct node **root, struct node *node1, struct node *node2)	{
 #include "45printBinaryTree.h" 
 
 int main()	{
-	srand(time(0));
+	srand(5);
 	
 	int n = 15;
 	int a[n], i, temp, rand_index;

@@ -181,8 +181,15 @@ int setHeight(struct node *node)	{
 		prH = leftH + 1;
 
 	// no height change
-	if (prH == node->height)
-		return 0;
+	if (prH == node->height)	{
+		// but is unbalanced? - due to deletion
+		int heightDiff = (rightH - leftH) > 0 ? (rightH - leftH) : (leftH - rightH);
+		
+		if (heightDiff > 1)
+			return 1; // unbalanced tree
+		else
+			return 0; // balanced tree
+	}
 	else	{
 		node->height = prH;
 		int heightDiff = (rightH - leftH) > 0 ? (rightH - leftH) : (leftH - rightH);
@@ -200,7 +207,7 @@ int setHeight(struct node *node)	{
 void deleteAVL(struct node **, int);
 void deleteNode(struct node **, struct node *);
 void transplant(struct node **, struct node *, struct node *);
-// leftRotate and rightRotate defined above
+// setHeight, leftRotate and rightRotate defined above
 void fixDelAVL(struct node **, struct node *);
 
 // this delete procedure replaces the entire node and not just the values
@@ -228,24 +235,34 @@ void deleteAVL(struct node **root, int key)	{
 void deleteNode(struct node **root, struct node *node)	{
 	if (node->lc == NULL)	{
 		transplant(root, node, node->rc);
+		fixDelAVL(root, node->pr);
 	}
-	else if (node->rc == NULL)
+	else if (node->rc == NULL)	{
 		transplant(root, node, node->lc);
+		fixDelAVL(root, node->pr);
+	}
 	else	{
 		// find inorder successor
 		struct node *suc = node->rc;
 		while (suc->lc != NULL)	{
 			suc = suc->lc;
 		}
+		
+		// height could change of suc node old position
+		struct node *temp = suc->rc;
+		
 		if (suc->pr != node)	{
-			transplant(root, suc, suc->rc);
-			// because there is no left child
+			transplant(root, suc, suc->rc); // because there is no left child
 			suc->rc = node->rc;
 			suc->rc->pr = suc;
 		}
+		
 		transplant(root, node, suc);
 		suc->lc = node->lc;
 		suc->lc->pr = suc;
+		
+		// fixing height of suc old pos
+		fixDelAVL(root, temp);
 	}
 }
 
@@ -267,56 +284,79 @@ void fixDelAVL(struct node **root, struct node *z)	{
 	int res;
 
 	struct node *x, *y;
-	// since z is the new node inserted
-	y = z;
-	z = z->pr;
-	x = NULL;
 
 	// fix heights till root and find violation of AVL if any
 	while (z != NULL)	{
 		res = setHeight(z);
+		printf("Parent %d Height:%d Res:%d\n", z->key, z->height, res);
 		if (res == 0)
+			// no height change so we return
 			return;
 		else if (res == -1)	{
-			x = y;
-			y = z;
+			// height changed but still balanced - no issue
+			// we move z one level above
 			z = z->pr;
 		}
 		else	{
+			// AVL violated
+			// we have our z we need to find x and y
+			if (z->lc != NULL && z->lc->height + 1 == z->height)
+				y = z->lc;
+			else
+				y = z->rc;
+
+			if (y->lc != NULL && y->lc->height + 1 == y->height)
+				x = y->lc;
+			else
+				x = y->rc;
+
 			// find if zig zig or zig zag
 			// zig zig
-			// dont have to check for if x is null since we will never enter this loop
-			// fixing height of z
-			z->height -= 2;
-			if (x->key < y->key && y->key < z->key)
+			if (x->key < y->key && y->key < z->key)	{
 				rightRotate(root, y, z);
-			else if (x->key >= y->key && y->key >= z->key)
+				// fix heights of z - height of x remains same
+				setHeight(z);
+				// change z to y - y's height will be fixed in next iteration
+				z = y;
+			}
+			else if (x->key >= y->key && y->key >= z->key)	{
 				leftRotate(root, z, y);
+				// fix heights of z - height of x remains same
+				setHeight(z);
+				// change z to y - y's height will be fixed in next iteration
+				z = y;
+			}
+			// zig zag
 			else	{
-				// fixing height of x and y
-				x->height += 1;
-				y->height -= 1;
 				if (x->key < y->key)	{
 					rightRotate(root, x, y);
 					// it is implied that y->key > z->key otherwise we get above cases
 					leftRotate(root, z, x);
+					// fixing heights
+					setHeight(z);
+					setHeight(y);
+					// not changing height of x recursion will take care of that
+					z = x;
 				}
 				else	{
 					// x->key > y->key
 					leftRotate(root, y, x);
 					// implied that y->key <- z->key
 					rightRotate(root, x, z);
-				}
-			}
+					// fixing heights
+					setHeight(z);
+					setHeight(y);
+					// not changing height of x recursion will take care of that
+					z = x;
+				}// end of else
+			}// end of outer else
 			
-			// only one interation is required to fix the tree
-			return;
-		}
-	}
+		}// end of else (res == -2)
+	}// end of while
 }
 
 int main()	{
-	srand(time(0));
+	srand(5);
 	
 	int n = 20;
 	int a[n], i, temp, rand_index;
@@ -339,12 +379,18 @@ int main()	{
 	printBinaryTree(root);
 	
 	int del_node;
-	printf("Enter the node to be deleted: ");
-	scanf("%d", &del_node);
 	
-	deleteAVL(&root, del_node);
+	while (1)	{
+		printf("Enter the node to be deleted(-1 to exit): ");
+		scanf("%d", &del_node);
+	
+		if (del_node == -1)
+			break;
 
-	printBinaryTree(root);
+		deleteAVL(&root, del_node);
+
+		printBinaryTree(root);
+	}
 
 	return 0;
 }

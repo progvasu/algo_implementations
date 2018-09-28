@@ -267,7 +267,6 @@ void deleteNode(struct node **root, struct node *node)	{
 }
 
 // this procedure replaces node1 with node2 - just the parents
-// and fixing the heights also
 void transplant(struct node **root, struct node *node1, struct node *node2)	{
 	if (node1->pr == NULL)
 		(*root) = node2;

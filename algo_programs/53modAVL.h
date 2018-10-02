@@ -1,9 +1,4 @@
-// delete a node from the AVL tree
-
-#include<stdio.h>
-#include<stdlib.h>
-#include<time.h>
-
+// AVL node
 struct node	{
 	int key;
 	int height;	
@@ -364,49 +359,4 @@ void transplant(struct node **root, struct node *node1, struct node *node2)	{
 	
 	if (node2 != NULL)
 		node2->pr = node1->pr;
-}
-
-int main()	{
-	srand(5);
-	
-	int n = 20;
-	int a[n], i, temp, rand_index;
-	struct node *root = NULL;
-
-	// create an index array of n elements
-	for (i = 0 ; i < n ; i ++)
-		a[i] = i;
-	// permute it
-	for (i = 0 ; i < n ; i++)	{
-		rand_index = rand() % n;
-		temp = a[rand_index];
-		a[rand_index] = a[i];
-		a[i] = temp;
-	}
-	// insert into AVL tree
-	for (i = 0 ; i < n ; i++)
-		insertAVL(&root, a[i]);
-
-	printBinaryTree(root);
-	
-	int del_node;
-	
-	while (1)	{
-		printf("Enter the node to be deleted(-1 to exit): ");
-		scanf("%d", &del_node);
-	
-		if (del_node == -1)
-			break;
-
-		deleteAVL(&root, del_node);
-
-		printBinaryTree(root);
-		
-		if (root == NULL)	{
-			printf("Tree Empty!");
-			break;
-		}
-	}
-
-	return 0;
 }

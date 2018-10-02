@@ -1,9 +1,3 @@
-// delete a node from a Red Black tree
-
-#include<stdio.h>
-#include<stdlib.h>
-#include<time.h>
-
 // red black tree node
 struct node	{
 	int key;
@@ -402,52 +396,5 @@ void transplant(struct node **root, struct node *node1, struct node *node2)	{
 		node2->pr = node1->pr;
 }
 
+// print red black tree
 #include"50printRBTree.h"
-
-int main()	{
-	srand(2);
-
-	// root node
-	struct node *root = NULL;
-
-	// create a random RB Tree
-	int n = 5;
-	int arr[n], i, rand_index, temp;
-
-	// create an aray of indexes
-	for(i = 0 ; i < n ; i++)
-		arr[i] = i;
-
-	// randomize this array
-	for(i = 0 ; i < n ; i++)	{
-		rand_index = (rand() % n);
-		temp = arr[rand_index];
-		arr[rand_index] = arr[i];
-		arr[i] = temp;
-	}
-
-	// insert these numbers into RB Tree
-	for (i = 0 ; i < n ; i++)
-		insertRBT(&root, arr[i]);
-
-	// print this tree
-	printRBTree(root);
-
-	int key;
-
-	while(1)	{
-		printf("Enter the key to be deleted(-1 to exit): ");
-		scanf("%d", &key);
-
-		if (key == -1)
-			break;
-
-		// delete from RB tree
-		deleteRBT(&root, key);
-		
-		// insert into RB tree
-		printRBTree(root);
-	}
-
-	return 0;
-}

@@ -96,6 +96,8 @@ void fixRBInsert(struct node **root, struct node *node)	{
 				node->color = 'B';
 				node->pr->color = 'R';
 				rightRotate(root, node->pr, node);
+				// RB property is fixed - no further iterations required
+				node = *root;
 			}
 		}
 		// if red red condition occurs in right sub tree - right left pointers exchanged
@@ -112,7 +114,7 @@ void fixRBInsert(struct node **root, struct node *node)	{
 			}
 			// else if uncle is black or null i.e. assuming it to be black
 			else	{
-				// if node a right child - Case 2
+				// if node a left child - Case 2
 				if (node == node->pr->lc)
 					rightRotate(root, node->pr, node);
 				else
@@ -120,6 +122,9 @@ void fixRBInsert(struct node **root, struct node *node)	{
 				node->color = 'B';
 				node->pr->color = 'R';
 				leftRotate(root, node->pr, node);
+				
+				// RB property is fixed - no further iterations required
+				node = *root;
 			}
 		}// end of else
 	} // end of while
@@ -188,24 +193,54 @@ void rightRotate(struct node **root, struct node *y, struct node *x)	{
 #include"50printRBTree.h"
 
 int main()	{
+	// set seed
+	srand(time(0));
+
 	// root node
 	struct node *root = NULL;
 
-	int key;
+	// creating a random RB Tree
+	int n = 10;
+	int arr[n], i, rand_index, temp;
 
-	while(1)	{
-		printf("Enter the key to be inserted(-1 to exit): ");
-		scanf("%d", &key);
+	// initialize index array
+	for (i = 0 ; i < n ; i++)
+		arr[i] = i;
 
-		if (key == -1)
-			break;
-
-		// insert into RB tree
-		insertRBT(&root, key);
-		
-		// insert into RB tree
-		printRBTree(root);
+	// permute it
+	for (i = 0 ; i < n ; i++)	{
+		// find a rand index
+		rand_index = rand() % n;
+		temp = arr[rand_index];
+		arr[rand_index] = arr[i];
+		arr[i] = temp;
 	}
+
+	// insert into RB tree
+	for (i = 0 ; i < n ; i++)	{
+		insertRBT(&root, arr[i]);
+
+		printRBTree(root);
+
+		// halt 
+		getchar();
+	}
+
+	// int key;
+
+	// while (1)	{
+	// 	printf("Enter the key to be inserted(-1 to exit): ");
+	// 	scanf("%d", &key);
+
+	// 	if (key == -1)
+	// 		break;
+
+	// 	// insert into RB tree
+	// 	insertRBT(&root, key);
+		
+	// 	// insert into RB tree
+	// 	printRBTree(root);
+	// }
 
 	return 0;
 }

@@ -4,6 +4,14 @@
 #include<stdlib.h>
 #include<time.h>
 
+struct node	{
+	int key;
+	int height;	
+	struct node *lc;
+	struct node *rc;
+	struct node *pr;
+};
+
 #include "53modAVL.h"
 
 int isAVL(struct node *root)	{
@@ -80,7 +88,7 @@ int main()	{
 	// 	}
 	// }
 
-	// testing this for a few thousand iterations
+	// testing for a few thousand iterations
 
 	int iter = 100000;
 	int n = 20;

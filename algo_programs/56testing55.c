@@ -4,6 +4,14 @@
 #include<stdlib.h>
 #include<time.h>
 
+struct node	{
+	int key;
+	char color;
+	struct node *lc;
+	struct node *rc;
+	struct node *pr;
+};
+
 #include "55modRB.h"
 
 // black depth must be same for every leaf node so using a global variable to keep track
@@ -74,65 +82,132 @@ int isRBT(struct node *root)	{
 }
 
 int main()	{
+	srand(time(0));
+
 	// how to test a red black tree?
 	// 1. check if root is black
 	// 2. if a node is red both children are either black or NULL
 	// 3. black height of every path from root to leaf is equal - could do it opposite black depth for every leaf should be equal
 
 	// for a random tree
+	
+	// int n = 30;
+	// int a[n], i, rand_index, temp;
 
-	srand(time(0));
-	//srand(0);
+	// // create index array
+	// for (i = 0 ; i < n ; i++)
+	// 	a[i] = i;
+	// // permute it
+	// for (i = 0 ; i < n ; i++)	{
+	// 	rand_index = rand() % n;
+	// 	temp = a[rand_index];
+	// 	a[rand_index] = a[i];
+	// 	a[i] = temp;
+	// }
 
-	int n = 15;
-	int a[n], i, rand_index, temp;
+	// struct node *root = NULL;
+
+	// // insert into RB and check
+	// for (i = 0 ; i < n ; i++)	{
+	// 	insertRBT(&root, a[i]);
+		
+	// 	// check to see if Red Black tree property is satisfied
+	// 	if (!isRBT(root))	{
+	// 		printf("RBT property violated\n");
+	// 		printRBTree(root);
+	// 		break;
+	// 	}
+	// }
+
+	// // printRBTree(root);
+
+	// // permute the numbers
+	// for (i = 0 ; i < n ; i++)	{
+	// 	rand_index = rand() % n;
+	// 	temp = a[rand_index];
+	// 	a[rand_index] = a[i];
+	// 	a[i] = temp;
+	// }
+
+	// // delete from AVL and check
+	// for (i = 0 ; i < n ; i++)	{
+	// 	deleteRBT(&root, a[i]);
+
+	// 	// check to see if AVL property satisfied
+	// 	if (!isRBT(root))	{
+	// 		printf("RBT property violated\n");
+	// 		printRBTree(root);
+	// 		break;
+	// 	}
+	// }
+
+	// testing for a few thousand iterations
+
+	int iter = 1000000;
+	int n = 60;
+	// separate and b to make debugging easier
+	int a[n], b[n], i, rand_index, temp;
+	struct node *root;
 
 	// create index array
-	for (i = 0 ; i < n ; i++)
+	for (i = 0 ; i < n ; i++)	{
 		a[i] = i;
-	// permute it
-	for (i = 0 ; i < n ; i++)	{
-		rand_index = rand() % n;
-		temp = a[rand_index];
-		a[rand_index] = a[i];
-		a[i] = temp;
+		b[i] = i;
 	}
 
-	struct node *root = NULL;
+	while (iter--)	{
+		// permute array - a
+		for (i = 0 ; i < n ; i++)	{
+			rand_index = rand() % n;
+			temp = a[rand_index];
+			a[rand_index] = a[i];
+			a[i] = temp;
+		}		
 
-	// insert into RB and check
-	for (i = 0 ; i < n ; i++)	{
-		insertRBT(&root, a[i]);
-		
-		// check to see if Red Black tree property is satisfied
-		if (!isRBT(root))	{
-			printf("RBT property violated\n");
-			break;
+		root = NULL;
+
+		// insert into red black tree and check
+		for (i = 0 ; i < n ; i++)	{
+			insertRBT(&root, a[i]);
+
+			// check to see if AVL property satisfied
+			if (!isRBT(root))	{
+				printf("RB property violated\n");
+				printRBTree(root);
+				// print input array
+				for (i = 0 ; i < n ; i++)
+					printf("%d  ", a[i]);
+				exit(0);
+			}
 		}
-	}
 
-	printRBTree(root);
+		// permute array - b
+		for (i = 0 ; i < n ; i++)	{
+			rand_index = rand() % n;
+			temp = b[rand_index];
+			b[rand_index] = b[i];
+			b[i] = temp;
+		}
 
-	// permute the numbers
-	for (i = 0 ; i < n ; i++)	{
-		rand_index = rand() % n;
-		temp = a[rand_index];
-		a[rand_index] = a[i];
-		a[i] = temp;
-	}
+		// delete from RB tree and check
+		for (i = 0 ; i < n ; i++)	{
+			deleteRBT(&root, b[i]);
 
-	// delete from AVL and check
-	for (i = 0 ; i < n ; i++)	{
-		deleteRBT(&root, a[i]);
+			// check to see if RB tree property satisfied
+			if (!isRBT(root))	{
+				printf("Red Black tree property violated\n");
+				printRBTree(root);
+				
+				// print array a and b
+				for (i = 0 ; i < n ; i++)
+					printf("%d  ", a[i]);
+				printf("\n");
+				for (i = 0 ; i < n ; i++)
+					printf("%d  ", b[i]);
+				printf("\n");
 
-		printRBTree(root);
-		getchar();
-
-		// check to see if AVL property satisfied
-		if (!isRBT(root))	{
-			printf("RBT property violated\n");
-			printRBTree(root);
-			break;
+				exit(0);
+			}
 		}
 	}
 	

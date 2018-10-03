@@ -278,6 +278,9 @@ void deleteNode(struct node **root, struct node *node)	{
 
 // this procedure will fix the Red Black Tree property
 void fixRBDelete(struct node **root, struct node *x, struct node *org_pr)	{
+	// we deleted the only element in the tree 
+	if ((*root) == NULL)
+		return;
 
 	// sibling of x
 	struct node *w;
@@ -317,8 +320,8 @@ void fixRBDelete(struct node **root, struct node *x, struct node *org_pr)	{
 			else {
 				// case 3 - right child of w is black
 				// we rotate to make the right child red
-				if (w->rc->color == 'B')	{
-					x->lc->color = 'B';
+				if (w->rc == NULL || w->rc->color == 'B')	{
+					w->lc->color = 'B';
 					w->color = 'R';
 					rightRotate(root, w, w->lc);
 					// update sibling
@@ -366,13 +369,14 @@ void fixRBDelete(struct node **root, struct node *x, struct node *org_pr)	{
 			else {
 				// case 3 - right child of w is black
 				// we rotate to make the right child red
-				if (w->lc->color == 'B')	{
-					x->rc->color = 'B';
+				if (w->lc == NULL || w->lc->color == 'B')	{
+					w->rc->color = 'B';
 					w->color = 'R';
 					leftRotate(root, w, w->rc);
 					// update sibling
 					w = org_pr->lc;
 				}
+
 				// case 4 - right child of w is red
 				w->color = org_pr->color;
 				org_pr->color = 'B';

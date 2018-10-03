@@ -1,4 +1,6 @@
 // AVL node
+// define a node like this
+
 struct node	{
 	int key;
 	int height;	

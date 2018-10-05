@@ -1,19 +1,19 @@
 // AVL node
 // define a node like this
 
-struct node	{
-	int key;
-	int height;	
-	struct node *lc;
-	struct node *rc;
-	struct node *pr;
-};
+// struct node	{
+// 	int key;
+// 	int height;	
+// 	struct node *lc;
+// 	struct node *rc;
+// 	struct node *pr;
+// };
 
 #include "45printBinaryTree.h"
 
 // ***** INSERTING INTO AVL ***** //
 
-// function decalarations for AVL insert
+// function declarations for AVL insert
 void insertAVL(struct node **, int);
 void fixAVL(struct node **, struct node *);
 int setHeight(struct node *);

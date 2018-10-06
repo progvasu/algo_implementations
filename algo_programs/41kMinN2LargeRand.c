@@ -1,26 +1,26 @@
 // finding k ~ 10^5 smallest numbers in n ~ 10^9 for this program we take n ~ 10^6 because of file size limitations
-// we use las vegas method to find the median 
+// we use las vegas method to find the median
 
 #include<stdio.h>
 #include<stdlib.h>
 #include<time.h>
 
-int partition(int *a, int l, int r)	{
-	int i, j, temp, pivot = a[l];
-	i = l + 1;
-
+int partition(int *input_array, int l , int r)	{
+	// choosing first element as pivot
+	int pivot = input_array[l];
+	int i = l + 1, temp, j;
 	for (j = i ; j <= r ; j++)	{
-		if (a[j] < pivot)	{
-			temp = a[j];
-			a[j] = a[i];
-			a[i] = temp;
+		if (input_array[j] < pivot)	{
+			temp = input_array[i];
+			input_array[i] = input_array[j];
+			input_array[j] = temp;
 			i++;
 		}
 	}
 
-	temp = a[i - 1];
-	a[i - 1] = a[l];
-	a[l] = temp;
+	temp = input_array[l];
+	input_array[l] = input_array[i - 1];
+	input_array[i - 1] = temp;
 
 	return i - 1;
 }
@@ -50,9 +50,9 @@ void findMedian(int *a, int l, int r, int rank)	{
 
 int main()	{
 	srand(time(0));
-	// tesing 
+	// tesing
  	int a[] = {9, 8, 7, 6, 5, 4, 3, 2, 1};
-	
+
 	findMedian(a, 0, 8, 4);
 
 	int i;

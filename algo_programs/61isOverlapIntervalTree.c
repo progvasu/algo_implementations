@@ -1,4 +1,4 @@
-// Built and print an interval tree with max interval in the subtree
+// check if the interval overlaps with any interval in the interval tree
 
 #include<stdio.h>
 #include<stdlib.h>
@@ -494,6 +494,28 @@ void printIntervalTree(struct node *root)	{
 	} // end of while
 } // end of function
 
+
+// **** CHECK OVERLAP **** //
+void checkOverlap(struct node *root, int left, int right)	{
+	struct node *node = root;
+
+	while(node != NULL)	{
+		// using the laws of tricotomy
+		if (right >= node->key && node->right >= left)	{
+			printf("Yes interval overlaps with [%d, %d]\n", node->key, node->right);
+			return;
+		}
+
+		if (node->lc != NULL && node->lc->max < left)
+			node = node->rc;
+		else
+			node = node->lc;
+	}
+
+	// we reached here that means no overlap
+	printf("No overlap!\n");
+}
+
 int main()	{
 	srand(time(0));
 
@@ -511,11 +533,11 @@ int main()	{
 
 	// create start index - must be unique
 	for (i = 1 ; i < n ; i++)
-		a[i][0] = a[i - 1][0] + rand() % 10 + 1;
+		a[i][0] = a[i - 1][0] + rand() % 20 + 1;
 
 	// create end index
 	for (i = 0 ; i < n ; i++)
-		a[i][1] = a[i][0] + (rand() % 20) + 1;	
+		a[i][1] = a[i][0] + (rand() % 10) + 1;	
 
 	struct node *root = NULL;
 
@@ -526,6 +548,13 @@ int main()	{
 
 	// print out the tree
 	printIntervalTree(root);
+
+	int l, r;
+	printf("\nEnter the interval to checked: ");
+	scanf("%d%d", &l, &r);
+	printf("\n");
+
+	checkOverlap(root, l, r);
 
 	return 0;
 }

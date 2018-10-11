@@ -1,44 +1,34 @@
-// Built and print an interval tree with max interval in the subtree
+// Find the sum of numbers between two numbers in a BBST - Using prefix sums
 
 #include<stdio.h>
 #include<stdlib.h>
 #include<time.h>
 
-// interval tree is printed as 
-// left interval
-// right interval
-// max interval in the subtree
-
-// node structure
 struct node	{
-	int key;	// left interval - not variable 'left' - dont want to disturb existing implementations
-	int height;
-	int right;	// right interval
-	int max;	// max right interval in both the subtrees
+	int key;
+	int tsum;
+	int height;	
 	struct node *lc;
 	struct node *rc;
 	struct node *pr;
 };
 
-/*** INSERT - START ***/
+// **** INSERT **** //
 
-// function declarations for AVL insert
-void insertAVL(struct node **, int, int);
+// function decalarations for AVL insert
+void insertAVL(struct node **, int);
 void fixAVL(struct node **, struct node *);
 int setHeight(struct node *);
 void leftRotate(struct node **, struct node *, struct node *);
 void rightRotate(struct node **, struct node *, struct node *);
 
-void insertAVL(struct node **root, int key, int right)	{
+void insertAVL(struct node **root, int key)	{
 	// creating node to be inserted
 	struct node *temp = (struct node *)malloc(sizeof(struct node));
 	temp->key = key;
 	temp->lc = NULL;
 	temp->rc = NULL;
-	// for node itself
-	temp->right = right;
-	// max intialization
-	temp->max = right;
+	temp->tsum = key;
 
 	// height of newly inserted node is zero
 	temp->height = 0;
@@ -57,19 +47,12 @@ void insertAVL(struct node **root, int key, int right)	{
 	parent = NULL;
 	while (pos != NULL)	{
 		parent = pos;
-		
 		if (key < pos->key)	{
-			// updating max 
-			if (pos->max < right)
-				pos->max = right;
-
+			pos->tsum += key;
 			pos = pos->lc;
 		}
 		else	{
-			// updating max 
-			if (pos->max < right)
-				pos->max = right;
-
+			pos->tsum += key;
 			pos = pos->rc;
 		}
 	}
@@ -133,8 +116,7 @@ void fixAVL(struct node **root, struct node *z)	{
 					rightRotate(root, x, z);
 				}
 			}
-			
-			// only one interation is required to fix the tree
+
 			return;
 		}
 	}
@@ -161,21 +143,19 @@ void leftRotate(struct node **root, struct node *t, struct node *d)	{
 	d->lc = t;
 	t->pr = d;
 
-	// fixing t->max
-	// figure out max - because max could have been from d subtree - which has now changed
-	t->max = t->right;
-	if (t->lc != NULL && t->lc->max > t->max)
-		t->max = t->lc->max;
-	if (t->rc != NULL && t->rc->max > t->max)
-		t->max = t->rc->max;
+	// fix tsum for t 
+	t->tsum = t->key;
+	if (t->lc != NULL)
+		t->tsum += t->lc->tsum;
+	if (t->rc != NULL)
+		t->tsum += t->rc->tsum;
 
-	// fixing d->max
-	// figure out max - because max could have been from d left subtree - which has now changed
-	d->max = d->right;
-	if (d->lc != NULL && d->lc->max > d->max)
-		d->max = d->lc->max;
-	if (d->rc != NULL && d->rc->max > d->max)
-		d->max = d->rc->max;	
+	// fix tsum for d 
+	d->tsum = d->key;		
+	if (d->lc != NULL)
+		d->tsum += d->lc->tsum;
+	if (d->rc != NULL)
+		d->tsum += d->rc->tsum;
 }
 
 void rightRotate(struct node **root, struct node *d, struct node *t)	{
@@ -199,19 +179,19 @@ void rightRotate(struct node **root, struct node *d, struct node *t)	{
 	d->rc = t;
 	t->pr = d;
 
-	// fixing t->max
-	t->max = t->right;
-	if (t->lc != NULL && t->lc->max > t->max)
-		t->max = t->lc->max;
-	if (t->rc != NULL && t->rc->max > t->max)
-		t->max = t->rc->max;
+	// fix tsum for t 
+	t->tsum = t->key;
+	if (t->lc != NULL)
+		t->tsum += t->lc->tsum;
+	if (t->rc != NULL)
+		t->tsum += t->rc->tsum;
 
-	// fixing d->max
-	d->max = d->right;
-	if (d->lc != NULL && d->lc->max > d->max)
-		d->max = d->lc->max;
-	if (d->rc != NULL && d->rc->max > d->max)
-		d->max = d->rc->max;
+	// fix tsum for d 
+	d->tsum = d->key;		
+	if (d->lc != NULL)
+		d->tsum += d->lc->tsum;
+	if (d->rc != NULL)
+		d->tsum += d->rc->tsum;
 }
 
 // return 0 if no height change, returns -1 if height change but balanced and return 1 if unbalanced
@@ -230,15 +210,8 @@ int setHeight(struct node *node)	{
 		prH = leftH + 1;
 
 	// no height change
-	if (prH == node->height)	{
-		// but is unbalanced? - due to deletion
-		int heightDiff = (rightH - leftH) > 0 ? (rightH - leftH) : (leftH - rightH);
-		
-		if (heightDiff > 1)
-			return 1; // unbalanced tree
-		else
-			return 0; // balanced tree
-	}
+	if (prH == node->height)
+		return 0;
 	else	{
 		node->height = prH;
 		int heightDiff = (rightH - leftH) > 0 ? (rightH - leftH) : (leftH - rightH);
@@ -250,13 +223,7 @@ int setHeight(struct node *node)	{
 	}
 }
 
-/*** print tree - START ***/
-
-// function declarations
-int power(int, int);
-void fillLevel(struct node *, int *, int *, int *, int, int);
-int findHeight(struct node *);
-void printIntervalTree(struct node *);
+// **** PRINT TREE **** //
 
 // max function macro
 #define MAX(X, Y) ((X > Y ? X : Y))
@@ -274,16 +241,15 @@ int power(int x, int n)	{
 }
 
 // calculate the level order traversal of tree
-void fillLevel(struct node *root, int *levelOrder, int *rightOrder, int *maxOrder, int pos, int max_pos)	{
+void fillLevel(struct node *root, int *levelOrder, int *tsumOrder, int pos, int max_pos)	{
 	// subtree doesn't exist - fill values for all sub levels as -1
 	if (root == NULL)	{
 		if (pos <= max_pos)	{
 			levelOrder[pos] = -1;
-			rightOrder[pos] = 0;
-			maxOrder[pos] = 0;
+			tsumOrder[pos] = 0;
 			// fill values for both sub children
-			fillLevel(NULL, levelOrder, rightOrder, maxOrder, pos*2 + 1, max_pos);
-			fillLevel(NULL, levelOrder, rightOrder, maxOrder, pos*2 + 2, max_pos);
+			fillLevel(NULL, levelOrder, tsumOrder, pos*2 + 1, max_pos);
+			fillLevel(NULL, levelOrder, tsumOrder, pos*2 + 2, max_pos);
 		}
 		else
 			// reached the end node of the tree
@@ -293,11 +259,10 @@ void fillLevel(struct node *root, int *levelOrder, int *rightOrder, int *maxOrde
 	else	{
 		// filling in the level of root node
 		levelOrder[pos] = root->key;
-		rightOrder[pos] = root->right;
-		maxOrder[pos] = root->max;
+		tsumOrder[pos] = root->tsum;
 		// fill in the level of children
-		fillLevel(root->lc, levelOrder, rightOrder, maxOrder, pos*2 + 1, max_pos);
-		fillLevel(root->rc, levelOrder, rightOrder, maxOrder, pos*2 + 2, max_pos);
+		fillLevel(root->lc, levelOrder, tsumOrder, pos*2 + 1, max_pos);
+		fillLevel(root->rc, levelOrder, tsumOrder, pos*2 + 2, max_pos);
 	}
 }
 
@@ -309,7 +274,7 @@ int findHeight(struct node *root)	{
 }
 
 // main function for printing the tree
-void printIntervalTree(struct node *root)	{
+void printBinaryTree(struct node *root)	{
 	// calculate height of the tree
 	int height = findHeight(root);
 
@@ -329,11 +294,9 @@ void printIntervalTree(struct node *root)	{
 
 	// find level order traversal
 	int levelOrder[no_nodes];
-	int rightOrder[no_nodes];
-	int maxOrder[no_nodes];
+	int tsumOrder[no_nodes];
+	fillLevel(root, levelOrder, tsumOrder, 0, no_nodes - 1);
 
-	fillLevel(root, levelOrder, rightOrder, maxOrder, 0, no_nodes - 1);
-	
 	// printing from root to leaf
 
 	// mid - spacing between nodes for the current height
@@ -354,14 +317,13 @@ void printIntervalTree(struct node *root)	{
 
 	// current height = height of root = max height
 	ch = height;
-	
-	// storing old value of cn
-	int temp;
 
+	// for storing old value of cn
+	int temp;
+	
 	// while at and above leaf level
 	while (ch >= 0)	{
 
-		// storing old value of cn
 		temp = cn;
 
 		// printing all nodes at current level
@@ -387,49 +349,20 @@ void printIntervalTree(struct node *root)	{
 			}
 		}
 
-		// restoring value of cn
+		printf("\n");
+		// restoring old value of cn
 		cn = temp;
 
-		// printing num of nodes at current height
-		// moving down one level
-		printf("\n");
+		// printing all nodes at current level
 		for (i = 0 ; i < n_ch ; i++)	{
 			// if node is not null
-			if (rightOrder[cn] != 0)	{
+			if (tsumOrder[cn] != 0)	{
 				if (i == 0) 
-					// for first color node at this height
-					printf("%*d", mid/2, rightOrder[cn++]);
-				else
-					// for all the remaining nodes
-					printf("%*d", mid, rightOrder[cn++]);
-			}
-			// if node is null - print blank
-			else	{
-				cn++;
-				if (i == 0)
 					// for first node at this height
-					printf("%*s", mid/2, "-");
-				else
-					// for rest of the nodes
-					printf("%*s", mid, "-");
-			}
-		}
-
-		// restoring value of cn
-		cn = temp;
-
-		// printing max of nodes at current height
-		// moving down one level
-		printf("\n");
-		for (i = 0 ; i < n_ch ; i++)	{
-			// if node is not null
-			if (maxOrder[cn] != 0)	{
-				if (i == 0) 
-					// for first color node at this height
-					printf("%*d", mid/2, maxOrder[cn++]);
+					printf("%*d", mid/2, tsumOrder[cn++]);
 				else
 					// for all the remaining nodes
-					printf("%*d", mid, maxOrder[cn++]);
+					printf("%*d", mid, tsumOrder[cn++]);
 			}
 			// if node is null - print blank
 			else	{
@@ -496,36 +429,24 @@ void printIntervalTree(struct node *root)	{
 
 int main()	{
 	srand(time(0));
-
-	int n = 15;
 	
-	// int a[][2] = {{1, 6}, {3, 20}, {7, 18}, {14, 21}, {19, 22}, {26, 42}, {28, 32}};
-	// int i;
+	int n = 15;
+	int a[n], i;
 
-	// trying to create a random interval tree
+	// initializing with random unique nodes
+	a[0] = rand() % 5 + 1;
 
-	int a[n][2], i, rand_index, temp;
-
-	// making sure starting index is unique
-	a[0][0] = 1;
-
-	// create start index - must be unique
-	for (i = 1 ; i < n ; i++)
-		a[i][0] = a[i - 1][0] + rand() % 10 + 1;
-
-	// create end index
-	for (i = 0 ; i < n ; i++)
-		a[i][1] = a[i][0] + (rand() % 20) + 1;	
+	for (i = 1 ; i < n ; i++)	
+		a[i] = a[i - 1] + (rand() % 10) + 1;
 
 	struct node *root = NULL;
+	
+	// insert into AVL tree
+	for (i = 0 ; i < n ; i++)
+		insertAVL(&root, a[i]);
 
-	// insert into AVL and check
-	for (i = 0 ; i < n ; i++)	{
-		insertAVL(&root, a[i][0], a[i][1]);
-	}
-
-	// print out the tree
-	printIntervalTree(root);
+	// printing out the AVL tree
+	printBinaryTree(root);
 
 	return 0;
 }

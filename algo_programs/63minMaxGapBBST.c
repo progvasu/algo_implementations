@@ -1,4 +1,4 @@
-// Find the sum of numbers between two numbers in a BBST - Using prefix sums
+// find the min and max gap in a BBST
 
 #include<stdio.h>
 #include<stdlib.h>
@@ -6,16 +6,17 @@
 
 struct node	{
 	int key;
-	int tsum;
+	int min;
+	int max;
 	int height;	
 	struct node *lc;
 	struct node *rc;
 	struct node *pr;
 };
 
-// **** INSERT **** //
+// ***** INSERTING INTO AVL ***** //
 
-// function decalarations for AVL insert
+// function declarations for AVL insert
 void insertAVL(struct node **, int);
 void fixAVL(struct node **, struct node *);
 int setHeight(struct node *);
@@ -28,7 +29,8 @@ void insertAVL(struct node **root, int key)	{
 	temp->key = key;
 	temp->lc = NULL;
 	temp->rc = NULL;
-	temp->tsum = key;
+	temp->min = key;
+	temp->max = key;
 
 	// height of newly inserted node is zero
 	temp->height = 0;
@@ -48,12 +50,22 @@ void insertAVL(struct node **root, int key)	{
 	while (pos != NULL)	{
 		parent = pos;
 		if (key < pos->key)	{
-			pos->tsum += key;
 			pos = pos->lc;
+			// updating max 
+			if (pos->max < key)
+				pos->max = key;
+			// updating min
+			if (pos->min > key)
+				pos->min = key;
 		}
 		else	{
-			pos->tsum += key;
 			pos = pos->rc;
+			// updating max 
+			if (pos->max < key)
+				pos->max = key;
+			// updating min
+			if (pos->min > key)
+				pos->min = key;
 		}
 	}
 
@@ -116,7 +128,8 @@ void fixAVL(struct node **root, struct node *z)	{
 					rightRotate(root, x, z);
 				}
 			}
-
+			
+			// only one interation is required to fix the tree
 			return;
 		}
 	}
@@ -142,20 +155,6 @@ void leftRotate(struct node **root, struct node *t, struct node *d)	{
 	// setting left child of d and parent of t
 	d->lc = t;
 	t->pr = d;
-
-	// fix tsum for t 
-	t->tsum = t->key;
-	if (t->lc != NULL)
-		t->tsum += t->lc->tsum;
-	if (t->rc != NULL)
-		t->tsum += t->rc->tsum;
-
-	// fix tsum for d 
-	d->tsum = d->key;		
-	if (d->lc != NULL)
-		d->tsum += d->lc->tsum;
-	if (d->rc != NULL)
-		d->tsum += d->rc->tsum;
 }
 
 void rightRotate(struct node **root, struct node *d, struct node *t)	{
@@ -178,20 +177,6 @@ void rightRotate(struct node **root, struct node *d, struct node *t)	{
 	// setting right child of d and parent of t;
 	d->rc = t;
 	t->pr = d;
-
-	// fix tsum for t 
-	t->tsum = t->key;
-	if (t->lc != NULL)
-		t->tsum += t->lc->tsum;
-	if (t->rc != NULL)
-		t->tsum += t->rc->tsum;
-
-	// fix tsum for d 
-	d->tsum = d->key;		
-	if (d->lc != NULL)
-		d->tsum += d->lc->tsum;
-	if (d->rc != NULL)
-		d->tsum += d->rc->tsum;
 }
 
 // return 0 if no height change, returns -1 if height change but balanced and return 1 if unbalanced
@@ -210,8 +195,15 @@ int setHeight(struct node *node)	{
 		prH = leftH + 1;
 
 	// no height change
-	if (prH == node->height)
-		return 0;
+	if (prH == node->height)	{
+		// but is unbalanced? - due to deletion
+		int heightDiff = (rightH - leftH) > 0 ? (rightH - leftH) : (leftH - rightH);
+		
+		if (heightDiff > 1)
+			return 1; // unbalanced tree
+		else
+			return 0; // balanced tree
+	}
 	else	{
 		node->height = prH;
 		int heightDiff = (rightH - leftH) > 0 ? (rightH - leftH) : (leftH - rightH);
@@ -223,7 +215,13 @@ int setHeight(struct node *node)	{
 	}
 }
 
-// **** PRINT TREE **** //
+/*** print tree - START ***/
+
+// function declarations
+int power(int, int);
+void fillLevel(struct node *, int *, int *, int *, int, int);
+int findHeight(struct node *);
+void printIntervalTree(struct node *);
 
 // max function macro
 #define MAX(X, Y) ((X > Y ? X : Y))
@@ -241,15 +239,16 @@ int power(int x, int n)	{
 }
 
 // calculate the level order traversal of tree
-void fillLevel(struct node *root, int *levelOrder, int *tsumOrder, int pos, int max_pos)	{
+void fillLevel(struct node *root, int *levelOrder, int *minOrder, int *maxOrder, int pos, int max_pos)	{
 	// subtree doesn't exist - fill values for all sub levels as -1
 	if (root == NULL)	{
 		if (pos <= max_pos)	{
 			levelOrder[pos] = -1;
-			tsumOrder[pos] = 0;
+			minOrder[pos] = -1;
+			maxOrder[pos] = -1;
 			// fill values for both sub children
-			fillLevel(NULL, levelOrder, tsumOrder, pos*2 + 1, max_pos);
-			fillLevel(NULL, levelOrder, tsumOrder, pos*2 + 2, max_pos);
+			fillLevel(NULL, levelOrder, minOrder, maxOrder, pos*2 + 1, max_pos);
+			fillLevel(NULL, levelOrder, minOrder, maxOrder, pos*2 + 2, max_pos);
 		}
 		else
 			// reached the end node of the tree
@@ -259,10 +258,11 @@ void fillLevel(struct node *root, int *levelOrder, int *tsumOrder, int pos, int 
 	else	{
 		// filling in the level of root node
 		levelOrder[pos] = root->key;
-		tsumOrder[pos] = root->tsum;
+		minOrder[pos] = root->min;
+		maxOrder[pos] = root->max;
 		// fill in the level of children
-		fillLevel(root->lc, levelOrder, tsumOrder, pos*2 + 1, max_pos);
-		fillLevel(root->rc, levelOrder, tsumOrder, pos*2 + 2, max_pos);
+		fillLevel(root->lc, levelOrder, minOrder, maxOrder, pos*2 + 1, max_pos);
+		fillLevel(root->rc, levelOrder, minOrder, maxOrder, pos*2 + 2, max_pos);
 	}
 }
 
@@ -294,8 +294,9 @@ void printBinaryTree(struct node *root)	{
 
 	// find level order traversal
 	int levelOrder[no_nodes];
-	int tsumOrder[no_nodes];
-	fillLevel(root, levelOrder, tsumOrder, 0, no_nodes - 1);
+	int minOrder[no_nodes];
+	int maxOrder[no_nodes];
+	fillLevel(root, levelOrder, minOrder, maxOrder, 0, no_nodes - 1);
 
 	// printing from root to leaf
 
@@ -318,7 +319,7 @@ void printBinaryTree(struct node *root)	{
 	// current height = height of root = max height
 	ch = height;
 
-	// for storing old value of cn
+	// for storing old value of cn;
 	int temp;
 	
 	// while at and above leaf level
@@ -336,33 +337,6 @@ void printBinaryTree(struct node *root)	{
 				else
 					// for all the remaining nodes
 					printf("%*d", mid, levelOrder[cn++]);
-			}
-			// if node is null - print blank
-			else	{
-				cn++;
-				if (i == 0)
-					// for first node at this height
-					printf("%*s", mid/2, "-");
-				else
-					// for rest of the nodes
-					printf("%*s", mid, "-");
-			}
-		}
-
-		printf("\n");
-		// restoring old value of cn
-		cn = temp;
-
-		// printing all nodes at current level
-		for (i = 0 ; i < n_ch ; i++)	{
-			// if node is not null
-			if (tsumOrder[cn] != 0)	{
-				if (i == 0) 
-					// for first node at this height
-					printf("%*d", mid/2, tsumOrder[cn++]);
-				else
-					// for all the remaining nodes
-					printf("%*d", mid, tsumOrder[cn++]);
 			}
 			// if node is null - print blank
 			else	{
@@ -427,141 +401,27 @@ void printBinaryTree(struct node *root)	{
 	} // end of while
 } // end of function
 
-int findPrefixSum(struct node *root, int num)	{
-	// prefix sum returns sum of all numbers less than the number (notice not including the number)
-	struct node *node = root;
-	int psum = 0;
-
-	while(node)	{
-		if (node->key == num)	{
-			if (node->lc != NULL)
-				psum += node->lc->tsum;
-			break;
-		}
-		else if (node->key > num)	{
-			node = node->lc;
-		}
-		else	{
-			if (node->lc != NULL)
-				psum += node->lc->tsum;
-			psum += node->key;
-			node = node->rc;
-		}
-	}
-
-	// now node with key 'num' must exist in the tree if not then return zero
-	if (node == NULL)
-		return -1;
-	else
-		return psum;
-}
-
-int findSum(struct node *root, int num1, int num2)	{
-	int prefix1 = findPrefixSum(root, num1);
-	int prefix2 = findPrefixSum(root, num2);
-
-	if (prefix1 == -1 || prefix2 == -1)
-		return -1;
-	else
-		// num2 to adjust for the way we calculate prefix sum
-		return (prefix2 - prefix1) + num2;
-}
 
 int main()	{
 	srand(time(0));
 	
-	// int n = 15;
-	// int a[n], i;
-
-	// // initializing with random unique nodes
-	// a[0] = rand() % 5 + 1;
-
-	// for (i = 1 ; i < n ; i++)	
-	// 	a[i] = a[i - 1] + (rand() % 10) + 1;
-
-	// struct node *root = NULL;
-	
-	// // insert into AVL tree
-	// for (i = 0 ; i < n ; i++)
-	// 	insertAVL(&root, a[i]);
-
-	// // printing out the AVL tree
-	// printBinaryTree(root);
-
-	// // printing input sequence
-	// printf("\n");
-	// for (i = 0 ; i < n ; i++)
-	// 	printf("%d ", a[i]);
-	// printf("\n\n");
-
-	// int num1, num2;
-	// printf("Enter two numbers between which sum is required (num1 <= num2): ");
-	// scanf("%d%d", &num1, &num2);
-
-	// int result = findSum(root, num1, num2);
-
-	// if (result != -1)	{
-	// 	printf("Answer from tree: %d\n", result);
-
-	// 	// answer from sorted array
-	// 	result = 0;
-	// 	for (i = 0 ; i < n ; i++)	{
-	// 		if (num1 <= a[i])
-	// 			result += a[i];
-	// 		if (a[i] == num2)
-	// 			break;
-	// 	}
-
-	// 	printf("Answer from input sorted sequence: %d\n", result);	
-	// }
-	// else	{
-	// 	printf("These numbers don't exist in the tree\n");
-	// }
-
-	// tester code
 	int n = 15;
 	int a[n], i;
-	int iter = 1000000;
 
-	while (iter--)	{
-		// initializing with random unique nodes
-		a[0] = rand() % 5 + 1;
+	// initializing with random unique nodes
+	a[0] = rand() % 5 + 1;
 
-		for (i = 1 ; i < n ; i++)	
-			a[i] = a[i - 1] + (rand() % 10) + 1;
+	for (i = 1 ; i < n ; i++)	
+		a[i] = a[i - 1] + (rand() % 10) + 1;
 
-		struct node *root = NULL;
-		
-		// insert into AVL tree
-		for (i = 0 ; i < n ; i++)
-			insertAVL(&root, a[i]);
+	struct node *root = NULL;
+	
+	// insert into AVL tree
+	for (i = 0 ; i < n ; i++)
+		insertAVL(&root, a[i]);
 
-		int i1, i2;
-		i1 = rand() % n;
-		i2 = i1 + rand() % (n - i1) + 1;
-		if (i2 >= n)
-			i2 = n - 1;
-
-		int result1 = findSum(root, a[i1], a[i2]);
-		int result2 = 0;
-		for (i = i1 ; i <= i2 ; i++)	{
-			result2 += a[i];
-		}
-
-		if (result1 != result2)	{
-			printBinaryTree(root);
-			printf("\n\n");
-			
-			for (i = 0 ; i < n ; i++)
-			printf("%d ", a[i]);
-			printf("\n");
-
-			printf("index1: %d \t index2: %d\n", i1, i2);
-			printf("Tree ans: %d \t Array ans: %d", result1, result2);
-			printf("\n\nERROR!!!\n\n");
-			break;
-		}
-	}
+	// printing out the AVL tree
+	printBinaryTree(root);
 
 	return 0;
 }

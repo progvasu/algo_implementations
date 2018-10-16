@@ -7,9 +7,54 @@
 // function declarations
 void buildHeap(int *, int, int);
 void topDownHeapify(int *, int, int);
+int deleteMin(int *, int);
+int changeKey(int *, int, int, int);
+
+// function declarations for displaying heap
 int findHeight(int);
 int power(int, int);
 void displayHeap(int *, int );
+
+int changeKey(int *arr, int index, int key, int f_nodes)	{
+	// incorrect index values
+	if (index < 0 || index >= f_nodes)
+		return -2;
+	if (key > 99)
+		return 2;
+
+	// no change
+	if (arr[index] == key)
+		return 0;
+
+	// increase or decrease key
+	i
+}
+
+int deleteMin(int *arr, int f_nodes)	{
+	int ret = arr[0];
+	
+	// just one node left
+	if (f_nodes == 1)
+		return ret;
+
+	// copy last element to root
+	arr[0] = arr[f_nodes - 1];
+
+	// removing last node
+	arr[f_nodes - 1] = -1;
+
+	// moving new root node to it its proper place
+	topDownHeapify(arr, 0, f_nodes - 1);
+
+	return ret;
+}
+
+void buildHeap(int *arr, int tn, int fn)	{
+	int temp = fn/2;
+
+	while (temp >= 0)
+		topDownHeapify(arr, temp--, fn);
+}
 
 void topDownHeapify(int *arr, int curr_node, int f_nodes)	{
 	int lc, rc, low, temp;
@@ -45,13 +90,6 @@ void topDownHeapify(int *arr, int curr_node, int f_nodes)	{
 		}
 	}
 } // end of top down heapify
-
-void buildHeap(int *arr, int tn, int fn)	{
-	int temp = fn/2;
-
-	while (temp >= 0)
-		topDownHeapify(arr, temp--, fn);
-}
 
 int findHeight(int n)	{
 	int h = -1, temp = 1;
@@ -199,21 +237,30 @@ int main()	{
 	srand(time(0));
 
 	// n should represent a complete tree
-	// -1 shows an empty node
-	int n = 32 - 1;
+	int n = 16 - 1;
 	int a[n];
 
 	// m actual number of nodes present in the tree < n
-	int m = 24;
+	int m = 12;
 	
 	// loop variables
 	int i;
 
 	// random heap - no duplicates
-	a[0] = rand() % 10;
+	a[0] = rand() % 5;
 	for (i = 1 ; i < m ; i++)
-		a[i] = a[i - 1] + rand() % 10 + 1;
+		a[i] = a[i - 1] + rand() % 5 + 1;
 
+	// randomizing them
+	int temp, rand_index;
+	for (i = 0 ; i < m ; i++)	{
+		rand_index = rand() % m;
+		temp = a[rand_index];
+		a[rand_index] = a[i];
+		a[i] = temp;
+	}
+
+	// -1 shows an empty node
 	while (i < n)
 		a[i++] = -1;
 
@@ -222,6 +269,65 @@ int main()	{
 
 	// display heap
 	displayHeap(a, n);
+
+	int option, index, key, result;
+
+	while(m != 0)	{
+		printf("\n 1. Delete Min\n");
+		printf(" 2. Change Key\n");
+		printf("-1. Exit\n");
+		printf("Enter option: ");
+		scanf("%d", &option);
+
+		switch(option)	{
+			case 1:
+	
+				printf("Min deleted - %d\n", deleteMin(a, m--));
+				
+				printf("\n");
+				displayHeap(a, n);
+	
+				break;
+	
+			case 2:
+	
+				printf("Enter index and new key: ");
+				scanf("%d%d", &index, &key);
+	
+				result = changeKey(a, index, key, m);
+				
+				// interpreting values returned from the changeKey function
+				if (result == 1)
+					printf("Key at index %d incremented to %d\n", index, key);
+				else if (result == -1)
+					printf("Key at index %d decremented to %d\n", index, key);
+				else if (result == 0)
+					printf("No change in key value\n");
+				else if (result < -1)
+					printf("Incorrect index supplied\n");
+				else if (result > 1)
+					printf("Key value too large\n");
+
+				printf("\n");
+				displayHeap(a, n);
+
+				break;
+	
+			case -1:
+	
+				printf("EXITING\n");
+				return 0;
+	
+			default:
+	
+				printf("Select correct option\n");
+		}
+
+		if (m == 0)	{
+			printf("\nHeap Empty\n");
+			break;
+		}
+	}
 
 	return 0;
 }

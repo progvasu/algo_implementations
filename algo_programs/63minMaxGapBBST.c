@@ -1,4 +1,5 @@
 // find the min and max gap in a BBST
+// not implementing mingap for now - easy - need to treat leaves differently
 
 #include<stdio.h>
 #include<stdlib.h>
@@ -8,6 +9,7 @@ struct node	{
 	int key;
 	int min;
 	int max;
+	int mingap;
 	int height;	
 	struct node *lc;
 	struct node *rc;
@@ -50,22 +52,24 @@ void insertAVL(struct node **root, int key)	{
 	while (pos != NULL)	{
 		parent = pos;
 		if (key < pos->key)	{
-			pos = pos->lc;
 			// updating max 
 			if (pos->max < key)
 				pos->max = key;
 			// updating min
 			if (pos->min > key)
 				pos->min = key;
+
+			pos = pos->lc;
 		}
 		else	{
-			pos = pos->rc;
 			// updating max 
 			if (pos->max < key)
 				pos->max = key;
 			// updating min
 			if (pos->min > key)
 				pos->min = key;
+
+			pos = pos->rc;
 		}
 	}
 
@@ -155,6 +159,38 @@ void leftRotate(struct node **root, struct node *t, struct node *d)	{
 	// setting left child of d and parent of t
 	d->lc = t;
 	t->pr = d;
+
+	// fixing t->max
+	// figure out max - because max could have been from d subtree - which has now changed
+	t->max = t->key;
+	if (t->lc != NULL && t->lc->max > t->max)
+		t->max = t->lc->max;
+	if (t->rc != NULL && t->rc->max > t->max)
+		t->max = t->rc->max;
+
+	// fixing d->max
+	// figure out max - because max could have been from d left subtree - which has now changed
+	d->max = d->key;
+	if (d->lc != NULL && d->lc->max > d->max)
+		d->max = d->lc->max;
+	if (d->rc != NULL && d->rc->max > d->max)
+		d->max = d->rc->max;
+
+	// fixing t->min
+	// figure out min - because min could have been from d subtree - which has now changed
+	t->min = t->key;
+	if (t->lc != NULL && t->lc->min < t->min)
+		t->min = t->lc->min;
+	if (t->rc != NULL && t->rc->min < t->min)
+		t->min = t->rc->min;
+
+	// fixing d->min
+	// figure out min - because min could have been from d left subtree - which has now changed
+	d->min = d->key;
+	if (d->lc != NULL && d->lc->min < d->min)
+		d->min = d->lc->min;
+	if (d->rc != NULL && d->rc->min < d->min)
+		d->min = d->rc->min;
 }
 
 void rightRotate(struct node **root, struct node *d, struct node *t)	{
@@ -177,6 +213,38 @@ void rightRotate(struct node **root, struct node *d, struct node *t)	{
 	// setting right child of d and parent of t;
 	d->rc = t;
 	t->pr = d;
+
+		// fixing t->max
+	// figure out max - because max could have been from d subtree - which has now changed
+	t->max = t->key;
+	if (t->lc != NULL && t->lc->max > t->max)
+		t->max = t->lc->max;
+	if (t->rc != NULL && t->rc->max > t->max)
+		t->max = t->rc->max;
+
+	// fixing d->max
+	// figure out max - because max could have been from d left subtree - which has now changed
+	d->max = d->key;
+	if (d->lc != NULL && d->lc->max > d->max)
+		d->max = d->lc->max;
+	if (d->rc != NULL && d->rc->max > d->max)
+		d->max = d->rc->max;
+
+	// fixing t->min
+	// figure out min - because min could have been from d subtree - which has now changed
+	t->min = t->key;
+	if (t->lc != NULL && t->lc->min < t->min)
+		t->min = t->lc->min;
+	if (t->rc != NULL && t->rc->min < t->min)
+		t->min = t->rc->min;
+
+	// fixing d->min
+	// figure out min - because min could have been from d left subtree - which has now changed
+	d->min = d->key;
+	if (d->lc != NULL && d->lc->min < d->min)
+		d->min = d->lc->min;
+	if (d->rc != NULL && d->rc->min < d->min)
+		d->min = d->rc->min;
 }
 
 // return 0 if no height change, returns -1 if height change but balanced and return 1 if unbalanced
@@ -337,6 +405,60 @@ void printBinaryTree(struct node *root)	{
 				else
 					// for all the remaining nodes
 					printf("%*d", mid, levelOrder[cn++]);
+			}
+			// if node is null - print blank
+			else	{
+				cn++;
+				if (i == 0)
+					// for first node at this height
+					printf("%*s", mid/2, "-");
+				else
+					// for rest of the nodes
+					printf("%*s", mid, "-");
+			}
+		}
+
+		printf("\n");
+
+		cn = temp;
+
+		// printing all min of every node
+		for (i = 0 ; i < n_ch ; i++)	{
+			// if node is not null
+			if (minOrder[cn] != -1)	{
+				if (i == 0) 
+					// for first node at this height
+					printf("%*d", mid/2, minOrder[cn++]);
+				else
+					// for all the remaining nodes
+					printf("%*d", mid, minOrder[cn++]);
+			}
+			// if node is null - print blank
+			else	{
+				cn++;
+				if (i == 0)
+					// for first node at this height
+					printf("%*s", mid/2, "-");
+				else
+					// for rest of the nodes
+					printf("%*s", mid, "-");
+			}
+		}
+
+		printf("\n");
+
+		cn = temp;
+
+		// printing max of every node
+		for (i = 0 ; i < n_ch ; i++)	{
+			// if node is not null
+			if (maxOrder[cn] != -1)	{
+				if (i == 0) 
+					// for first node at this height
+					printf("%*d", mid/2, maxOrder[cn++]);
+				else
+					// for all the remaining nodes
+					printf("%*d", mid, maxOrder[cn++]);
 			}
 			// if node is null - print blank
 			else	{

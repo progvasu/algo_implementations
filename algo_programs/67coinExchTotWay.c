@@ -18,7 +18,7 @@ int main()	{
 
 	// sum needed to pay - n
 	int n;
-	n = 8; //rand() % 100;
+	n = 15; //rand() % 100;
 
 	// we write a dynamic programming solution for this
 	// state table
@@ -88,62 +88,39 @@ int main()	{
 
 	// space optimized version
 
-	printf("\nUsing space optimized version\n\n");
+	printf("Using space optimized version\n\n");
 
 	// state table
 	int t[n + 1];
 
-	// base case - j = 0
+	// base case - j = 0 - 1st coin
 	for (i = 0 ; i < n + 1; i++)
-		t[i] = i;
+		t[i] = 1;
 
 	// induction
-	for (j = 1 ; j < k ; j++)	{
-		for (i = 1 ; i < n + 1 ; i++)	{
-			if (i >= coin_value[j] && (t[i - coin_value[j]] + 1) < t[i])
-				t[i] = t[i - coin_value[j]] + 1;
-		}
-	}
-
-	// // does exchanging the loops work - will not work
-	// for (i = 1 ; i < n + 1 ; i++)	{
-	// 	for (j = 1 ; j < k ; j++)	{
-	// 		if (i >= coin_value[j] && (t[i - coin_value[j]] + 1) < t[i])
-	// 			t[i] = t[i - coin_value[j]] + 1;
-	// 	}
-	// }	
-
-	// // printing state table
-	// // for(i = 0 ; i < n + 1 ; i++)	{
-	// // 	printf("%5d%5d\n", i, t[i]);
-	// // }
-
-	// // printf("\n");
-
-	// printf("Number of coins required to pay for %d: %d\n\n", n, t[n]);
-
-	// // backtracking to get value of these coins
-	// printf("Coins used: ");
-	
-	// i = n;
-	// j = k - 1;
-	// while (j > 0)	{
-	// 	if (i >= coin_value[j] && t[i] == (1 + t[i - coin_value[j]]))	{
-	// 		printf("%4d", coin_value[j]);
-	// 		i = i - coin_value[j];
-	// 	}
-	// 	else	{
-	// 		j = j - 1;
+	// for (j = 1 ; j < k ; j++)	{
+	// 	for (i = 1 ; i < n + 1 ; i++)	{
+	// 		if (i >= coin_value[j])
+	// 			t[i] += t[i - coin_value[j]];
 	// 	}
 	// }
 
-	// // is some value left unpaid?
-	// if (i > 0)
-	// 	while (i--)	{
-	// 		printf("%4d", 1);
-	// 	}	
+	// does exchanging the loops work - ?
+	for (i = 1 ; i < n + 1 ; i++)	{
+		for (j = 1 ; j < k ; j++)	{
+			if (i >= coin_value[j])
+				t[i] += t[i - coin_value[j]];
+		}
+	}	
 
-	// printf("\n");
+	// printing state table
+	for(i = 0 ; i < n + 1 ; i++)	{
+		printf("%5d%5d\n", i, t[i]);
+	}
+
+	printf("\n");
+
+	printf("Number of coins required to pay for %d: %d\n", n, t[n]);
 
 	return 0;
 }

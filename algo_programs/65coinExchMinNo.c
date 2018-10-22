@@ -131,7 +131,7 @@ int main()	{
 	// 	}
 	// }
 
-	// does exchanging the loops work - will not work
+	// does exchanging the loops work - yes works
 	for (i = 1 ; i < n + 1 ; i++)	{
 		for (j = 1 ; j < k ; j++)	{
 			if (i >= coin_value[j] && (t[i - coin_value[j]] + 1) < t[i])

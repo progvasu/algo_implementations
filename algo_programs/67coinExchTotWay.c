@@ -98,20 +98,20 @@ int main()	{
 		t[i] = 1;
 
 	// induction
-	// for (j = 1 ; j < k ; j++)	{
-	// 	for (i = 1 ; i < n + 1 ; i++)	{
-	// 		if (i >= coin_value[j])
-	// 			t[i] += t[i - coin_value[j]];
-	// 	}
-	// }
-
-	// does exchanging the loops work - ?
-	for (i = 1 ; i < n + 1 ; i++)	{
-		for (j = 1 ; j < k ; j++)	{
+	for (j = 1 ; j < k ; j++)	{
+		for (i = 1 ; i < n + 1 ; i++)	{
 			if (i >= coin_value[j])
 				t[i] += t[i - coin_value[j]];
 		}
-	}	
+	}
+
+	// does exchanging the loops work - fails for inputs above a big value
+	// for (i = 1 ; i < n + 1 ; i++)	{
+	// 	for (j = 1 ; j < k ; j++)	{
+	// 		if (i >= coin_value[j])
+	// 			t[i] += t[i - coin_value[j]];
+	// 	}
+	// }	
 
 	// printing state table
 	for(i = 0 ; i < n + 1 ; i++)	{

@@ -1,4 +1,5 @@
 // knapsack problem
+// sometimes taking the runtime sizes causes the stack to overflow
 
 #include<stdio.h>
 
@@ -8,25 +9,38 @@ int main()	{
 
 	// knapsack problem statement	
 	int items = 4, knap_size = 5;
+	// int items = 3, knap_size = 50;
 
 	int weight_vec[items];
+	// int weight_vec[100];
 	weight_vec[0] = 2;
 	weight_vec[1] = 1;
 	weight_vec[2] = 3;
 	weight_vec[3] = 2;
+	// weight_vec[0] = 10;
+	// weight_vec[1] = 20;
+	// weight_vec[2] = 30;
+	
 
 	int total_weight = 0;
 	for (j = 0 ; j < items ; j++)
-		total_weight += weight_vec[i];
+		total_weight += weight_vec[j];
+	// testing
+	// printf("Total weight: %d\n\n", total_weight);
 
 	int value_vec[items];
+	// int value_vec[100];
 	value_vec[0] = 12;
 	value_vec[1] = 10;
 	value_vec[2] = 21;
 	value_vec[3] = 15;
+	// value_vec[0] = 60;
+	// value_vec[1] = 100;
+	// value_vec[2] = 120;	
 
 	// state table - v[i][j] = maximum profit we can make by using first 'i' items and a knapsack of size 'j'
 	int V[items][total_weight + 1];
+	// int V[100][1000];
 
 	// initialization
 	// first row
@@ -67,12 +81,20 @@ int main()	{
 		printf("\n");
 	}
 
+	// testing
+	// printing out the last row
+	// printf("\n");
+	// for (j = 1 ; j <= total_weight ; j++)
+	// 	printf("%4d", V[items - 1][j]);
+
 	// max profit
 	int result = V[items - 1][knap_size];
 	printf("\nMax profit which can be made with knapsack of size %d is %d\n", knap_size, result);
 
 	// back tracking to get items which give the max profit
-	int result_items[1000];
+	// not dynamically assigning - we run out of stack space - segmentation fault
+	int result_items[items];
+	// int result_items[1000];
 
 	// intialize to zero
 	for (i = 0 ; i < items ; i++)
@@ -104,8 +126,9 @@ int main()	{
 
 	// state table - need two rows - we will always fill row1
 	int so[2][total_weight], row1 = 0, row2 = 1, temp;
+	// int so[2][1000], row1 = 0, row2 = 1, temp;
 
-	// first getting max profit
+	// first getting max profit - printing complete state table along with space optimized state table
 
 	// state print - columns
 	// print weight values
@@ -144,6 +167,10 @@ int main()	{
 
 		printf("\n");
 	}
+
+	// max profit
+	int result2 = V[row1][knap_size];
+	printf("\nMax profit which can be made with knapsack of size %d is %d\n", knap_size, result2);	
 
 	return 0;
 }

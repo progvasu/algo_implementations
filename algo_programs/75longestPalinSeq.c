@@ -6,7 +6,9 @@ int main()	{
 	srand(time(0));
 
 	// input
-	char *string = "GEEKSFORGEEKS";
+	// char *string = "GEEKS FOR GEEKS";
+	// char *string = "GEEKSFORGEEKS";
+	char *string = "ABCABBA";
 	int len_str;
 
 	// calculate length of string
@@ -69,6 +71,7 @@ int main()	{
 
 		printf("\n");
 	}
+	printf("\n");
 
 	// instead of diagonal filling we could fill this table horizontally
 	// we define separate table for checking if values match
@@ -94,7 +97,7 @@ int main()	{
 	// induction
 	for (l = 2 ; l < len_str ; l++)	{
 		i = len_str - 1 - l;
-		for (j = n - len_str ; j < len_str ; j++)	{
+		for (j = len_str - l; j < len_str ; j++)	{
 			if (string[i] == string[j])
 				H[i][j] = 2 + H[i + 1][j - 1];
 			else	{
@@ -105,6 +108,69 @@ int main()	{
 			}
 		}
 	}
+
+	// printing state table
+
+	// printing first string row
+	printf("%3c", ' ');
+	for (j = 0 ; j < len_str ; j++)
+		printf("%3c", string[j]);
+	printf("\n");
+
+	for (i = 0 ; i < len_str ; i++)	{
+		printf("%3c", string[i]);
+
+		for (j = 0 ; j < len_str ; j++)
+			printf("%3d", H[i][j]);
+
+		printf("\n");
+	}
+	printf("\n");
+
+	printf("Length of LPS - diagonal filling: %d\n", T[0][len_str - 1]);
+	printf("Length of LPS - horizntl filling: %d\n", H[0][len_str - 1]);	
+	
+	// back tracking using any state table we created
+	i = 0;
+	j = len_str - 1;
+
+	int res_len = T[0][len_str - 1];
+	char result[res_len];
+
+	// backtracking - simple - just reverse of filling the table
+	while (i >=0 && j > 0 && T[i][j] != 0)	{
+		if (string[i] == string[j])	{
+			result[--res_len] = string[i];
+			i++;
+			j--;
+		}
+		else	{
+			if (H[i + 1][j] > H[i][j - 1])
+				i = i + 1;
+			else
+				j = j - 1;
+		}
+	}
+
+	int temp;
+	// we get just 1 part of the string - we now fill the remaining part
+	// if res_len is odd
+	if (T[0][len_str - 1] % 2 == 1)	{
+		// skip the odd character
+		temp = res_len + 1;
+		while(res_len > 0)	{
+			result[--res_len] = result[temp++];
+		}
+	}
+	else	{
+		// no odd character to skip
+		temp = res_len + 1;
+		while(res_len > 0)	{
+			result[--res_len] = result[temp++];
+		}	
+	}
+
+	printf("\nLPS: %s\n", result);
 
 	return 0;
 }

@@ -12,8 +12,8 @@ int main()	{
 	srand(time(0));
 
 	// input
-	int nf = 30;
-	int neggs = 2;
+	int nf = 1000;
+	int neggs = 5;
 
 	// state table
 	int T[nf + 1][neggs + 1];
@@ -26,7 +26,7 @@ int main()	{
 	for (i = 0 ; i <= nf ; i++)
 		for (j = 1 ; j <= neggs ; j++)	{
 			T[i][j] = 0;
-			B[i][j] = 0;	
+			B[i][j] = 0;
 		}
 
 	// base case
@@ -51,7 +51,7 @@ int main()	{
 	for (i = 2 ; i <= nf ; i++)	{
 		for (j = 2 ; j <= neggs ; j++)	{
 			T[i][j] = 1;
-			B[i][j] = k;
+			B[i][j] = 1;
 
 			// initialize k = 1
 			k = 1;
@@ -86,21 +86,21 @@ int main()	{
 
 	// backtracking using extra space
 
-	printf("Backtracking state table: \n");
-	printf("%5c", ' ');
-	for (j = 1 ; j <= neggs ; j++)
-		printf("%5d", j);
-	printf("\n");
-
-	for (i = 0 ; i <= nf ; i++)	{
-		printf("%5d", i);
-
-		for (j = 1 ; j <= neggs ; j++)
-			printf("%5d", B[i][j]);
-
-		printf("\n");
-	}
-	printf("\n");
+//	printf("Backtracking state table: \n");
+//	printf("%5c", ' ');
+//	for (j = 1 ; j <= neggs ; j++)
+//		printf("%5d", j);
+//	printf("\n");
+//
+//	for (i = 0 ; i <= nf ; i++)	{
+//		printf("%5d", i);
+//
+//		for (j = 1 ; j <= neggs ; j++)
+//			printf("%5d", B[i][j]);
+//
+//		printf("\n");
+//	}
+//	printf("\n");
 
 	return 0;
 }

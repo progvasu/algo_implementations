@@ -1,5 +1,6 @@
 package n88graphRepresentation;
 
+
 /**
  *
  * @author vasu
@@ -23,6 +24,22 @@ public class Edge {
         this.weight = weight;
     }
 
+    @Override
+    public boolean equals(Object obj)   {
+        if (obj == null) return false;
+        if (obj == this) return true;
+        
+        // is obj an instance of Edge?
+        if (!(obj instanceof Edge)) return false;
+        
+        // cast the object to Edge - Since now it is safe to do so
+        Edge o = (Edge)obj;
+        if (o.src == this.src && o.dest == this.dest && o.weight == this.weight)
+            return true;
+        else
+            return false;
+    }
+    
     /**
      * @return the src
      */

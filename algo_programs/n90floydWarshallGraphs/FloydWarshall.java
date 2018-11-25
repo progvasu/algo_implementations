@@ -11,8 +11,8 @@ public class FloydWarshall {
     int next[][];
     int numSP[][];
     
-    FloydWarshall(int graph[][]) {
-        this.graph = graph;
+    public FloydWarshall(int AM[][]) {
+        this.graph = AM;
         this.result = new int[graph.length][graph.length];
         this.next = new int[graph.length][graph.length];
         this.numSP = new int[graph.length][graph.length];
@@ -58,21 +58,35 @@ public class FloydWarshall {
     public void printResult ()    {
         System.out.println("Distance Matrix: ");
         
-        for(int[] row : result)    {
-            // loop through all columns of current row 
-            for(int x : row) 
-                System.out.printf("%5d", x);
-            System.out.println();
+        // first row vertex numbers
+        System.out.printf("%3s", " ");
+        for(int i = 0 ; i < result.length ; i++)
+            System.out.printf("%3d", i);
+        System.out.println("");
+        for(int i = 0 ; i < result.length ; i++)   {
+            System.out.printf("%3d", i);
+            for(int j = 0 ; j < result.length ; j++)   {
+                System.out.printf("%3d", result[i][j]);
+            }
+            System.out.println("");
         }
+        System.out.println("");
         
         System.out.println("\nParent Matrix: ");
         
-        for(int[] row : next)    {
-            // loop through all columns of current row 
-            for(int x : row) 
-                System.out.printf("%5d", x);
-            System.out.println();
+        // first row vertex numbers
+        System.out.printf("%3s", " ");
+        for(int i = 0 ; i < next.length ; i++)
+            System.out.printf("%3d", i);
+        System.out.println("");
+        for(int i = 0 ; i < next.length ; i++)   {
+            System.out.printf("%3d", i);
+            for(int j = 0 ; j < next.length ; j++)   {
+                System.out.printf("%3d", next[i][j]);
+            }
+            System.out.println("");
         }
+        System.out.println("");
         
         System.out.println("\nNumber of SP Paths Matrix: ");
         

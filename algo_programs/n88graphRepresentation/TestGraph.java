@@ -26,6 +26,10 @@ public class TestGraph {
         System.out.println("");
         
         // print graph - weighted
-        graph.printWeightedGraph();
+//        graph.printWeightedGraph();
+        
+        graph.getAM();
+        
+        graph.printGraphAM();
     }
 }

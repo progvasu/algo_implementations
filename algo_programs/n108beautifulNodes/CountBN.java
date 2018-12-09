@@ -13,6 +13,7 @@ import n88graphRepresentation.Graph;
 public class CountBN {
     public static void main(String[] args) {
         // input will be a tree
+        
         Graph graph = new Graph(7, 6);
         
         // add edges
@@ -20,7 +21,7 @@ public class CountBN {
                 new Edge(1, 3), new Edge(4, 5), new Edge(5, 6));
         
         graph.addEdges(edges);
-        graph.printGraph();
+        //graph.printGraph();
         
         // setting weights of vertices
         int[] prior = new int[]{12, 24, 5, 8, 14, 13, 6};

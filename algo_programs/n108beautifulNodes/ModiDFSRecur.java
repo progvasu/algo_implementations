@@ -49,6 +49,7 @@ public class ModiDFSRecur {
         
         // insert into the tree
         tree.insert(temp_s.getWeight());
+        
         noBFN += (tree.findRank(temp_s.getWeight()) - 1);
         
         // visit vertex's reachable from this vertex

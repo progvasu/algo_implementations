@@ -34,7 +34,7 @@ int pop(struct node **root)	{
 
 int main()	{
 	srand(time(0));
-	int n = 10;
+	int n = 5;
 	int a[n], i, j, k, min_h, max_area = -1, left, right;
 
 	// printing indices
@@ -44,7 +44,8 @@ int main()	{
 
 	// initializing the input array
 	for (i = 0 ; i < n ; i++)	{
-		a[i] = rand() % 9 + 1; // doesn't make sense to have a zero
+		a[i] = i + 1;
+		//a[i] = rand() % 9 + 1; // doesn't make sense to have a zero
 		printf("%3d", a[i]);
 	}
 	printf("  Input\n");

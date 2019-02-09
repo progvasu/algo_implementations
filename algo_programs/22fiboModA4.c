@@ -6,7 +6,7 @@ int main()	{
 	int mod = 100;
 	
 	// Step1. Find Period - The sequence will repeat in 6 * mod
-	int period_max = (6 * mod) + 1, i, period;
+	int period_max = (6 * mod) + 2, i, period;
 	int periodArray[period_max];
 	periodArray[0] = 0;
 	periodArray[1] = 1;

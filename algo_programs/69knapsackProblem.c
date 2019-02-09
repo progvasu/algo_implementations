@@ -21,7 +21,7 @@ int main()	{
 	// weight_vec[1] = 20;
 	// weight_vec[2] = 30;
 	
-
+	// this works but is incorrect - no need to go till weight total_weight just go till knap_size
 	int total_weight = 0;
 	for (j = 0 ; j < items ; j++)
 		total_weight += weight_vec[j];

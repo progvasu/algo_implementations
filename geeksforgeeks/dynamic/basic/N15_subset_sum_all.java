@@ -15,26 +15,29 @@ class GFG {
 		while (test_cases-- > 0)	{
 			n = scan.nextInt();
 			input = new int[n];
-			sum = scan.nextInt();
 			for (int i = 0 ; i < n ; i++)	{
 				temp = scan.nextInt();
-				sum += temp;
 				input[i] = temp;
 			}
+			sum = scan.nextInt();
 
 			// define dp table
-			int[][] v = new int[sum + 1][n + 1];
+			int[][] v = new int[sum + 1][n];
 
 			// if the sum is zero empty set is the answer
-			for (int j = 0 ; j <= n ; j++)
+			for (int j = 0 ; j < n ; j++)
 				v[0][j] = 1;
 
-			// if the set is empty ans is false
-			for (int i = 0 ; i <= sum ; i++)	
-				v[i][0] = 0;
+			// if the denomination is mutiple of sum we can pay using that
+			for (int i = 1 ; i <= sum ; i++)	{
+				if (i == input[0])
+					v[i][0] = 1;
+				else
+					v[i][0] = 0;
+			}
 
 			// induction
-			for (int j = 1 ; j <= n ; j++)	{
+			for (int j = 1 ; j < n ; j++)	{
 				for (int i = 1 ; i <= sum ; i++)	{
 					// initialize v[i][j] to avoid garbage values
 					v[i][j] = 0;
@@ -49,8 +52,17 @@ class GFG {
 				}
 			}
 
+			// print out the state table
+			for (int i = 0 ; i <= sum ; i++)	{
+				System.out.printf("%4d", i);
+				for (int j = 0 ; j < n ; j++)	{
+					System.out.printf("%4d", v[i][j]);
+				}
+				System.out.println();
+			}
+
 			// count the sum
-			System.out.println(v[sum][n]);
+			System.out.println(v[sum][n - 1]);
 		}
 	}
 }

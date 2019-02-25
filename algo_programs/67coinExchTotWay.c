@@ -9,16 +9,21 @@ int main()	{
 	srand(time(0));
 
 	// coin values
-	int k = 4;
+	int k = 5;
 	int coin_value[k];
+	// coin_value[0] = 1;
+	// coin_value[1] = 3;
+	// coin_value[2] = 5;
+	// coin_value[3] = 7;
 	coin_value[0] = 1;
-	coin_value[1] = 3;
-	coin_value[2] = 5;
-	coin_value[3] = 7;
-
+	coin_value[1] = 2;
+	coin_value[2] = 3;
+	coin_value[3] = 4;
+	coin_value[4] = 5;
+	
 	// sum needed to pay - n
 	int n;
-	n = 15; //rand() % 100;
+	n = 10; //rand() % 100;
 
 	// we write a dynamic programming solution for this
 	// state table

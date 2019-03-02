@@ -21,43 +21,25 @@ class GFG {
 		        price[i] = scan.nextInt();
 		        
 		    
-		    // define the dp table
-		    int[][] dp = new int[n + 1][n + 1];
-		    
-		    // initialize diagonal
-		    for (int i = 1 ; i <= n ; i++)
-		        dp[i][i] = 0;
-		    // for rod of length 1
-		    for (int i = 1 ; i < n ; i++)
-		        dp[i][i+1] = price[0];
-		        
-		    for (int l = 2 ; l <= n ; l++)  {
-		        for (int i = 1 ; i <= n - l; i++)  {
-		            int j = i + l;
+		    // simple dynamic table
+		    // optimal price of rod length k
+		    int[] dp = new int[n + 1];
 
-		            // initial value price of this full length rod
-		            dp[i][j] = price[j - i - 1];
+		    // price of rod of length 0 is zero
+		    // price of rod of length 1 is price[0]
+		    dp[0] = 0;
+		    dp[1] = price[0];
+		    int max;
 
-		            for (int k = i + 1 ; k < j ; k++)	{
-		            	temp = dp[i][k] + dp[k][j];
-		            	if (temp > dp[i][j])	{
-		            		dp[i][j] = temp;
-		            	}
-		            }
-		        }
+		    for (int i = 2 ; i <= n ; i++)	{
+		    	max = Integer.MIN_VALUE;
+		    	for (int j = 0 ; j < i ; j++)	{
+		    		max = Math.max(max, price[j] + dp[i - j - 1]);
+		    	}
+		    	dp[i] = max;
 		    }
 
-		    // print the state table
-			for (int i = 1 ; i <= n ; i++)	{
-				System.out.printf("%4d", i);
-				for (int j = 1 ; j <= n ; j++)	{
-					System.out.printf("%4d", dp[i][j]);
-				}
-				System.out.println();
-			}
-
-
-		    System.out.println(dp[1][n]);
+		    System.out.println(dp[n]);
 		}
 	}
 }

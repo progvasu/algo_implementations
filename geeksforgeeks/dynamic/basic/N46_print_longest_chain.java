@@ -1,0 +1,1 @@
+// easy // just store the index chain
